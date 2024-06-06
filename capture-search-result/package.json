@@ -9,6 +9,13 @@
   "categories": [
     "Other"
   ],
+  "publisher": "in0ho1no",
+  "icon": "images/CaptureSearchResult.png",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/in0ho1no/CaptureSearchResult"
+  },
   "activationEvents": [],
   "main": "./dist/extension.js",
   "contributes": {
