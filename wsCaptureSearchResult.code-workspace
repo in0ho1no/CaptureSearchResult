@@ -1,9 +1,14 @@
 {
-    "folders": [
-        {
-            "path": "."
-        }
-    ],
+	"folders": [
+		{
+			"path": "."
+		},
+		{
+			// Yeoman extension generator
+			"name": "Extension generator",
+			"path": "./capture-search-result"
+		}
+	],
 	"settings": {
 		// ミニマップを非表示にする
 		"editor.minimap.enabled": false,
