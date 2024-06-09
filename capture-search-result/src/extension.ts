@@ -15,12 +15,18 @@ export function activate(context: vscode.ExtensionContext) {
 		// 表示中のテキストを取得する
 		const searchResults = searchEditor.document.getText();
 
-		// テキストを加工してクリップボードに保持する
+		// テキストを加工する
 		const separeta_char = vscode.workspace.getConfiguration().get<string>("capture-search-result.separator", "♪");
 		const processedResults = processSearchResults(searchResults, separeta_char);
-		vscode.env.clipboard.writeText(processedResults.join('\n'));
+
+		if (processedResults.length !== 0) {
+			// 加工した文字列を保持する
+			vscode.env.clipboard.writeText(processedResults.join('\n'));
+			vscode.window.showInformationMessage('Copied');
+		} else {
+			vscode.window.showErrorMessage('Nothing to copy was found.');
+		}
 	});
-	
 	context.subscriptions.push(copySearchResultsCommand);
 }
 
@@ -56,6 +62,5 @@ function processSearchResults(searchResults: string, separeta_char: string): Arr
 			}
 		}
 	});
-
 	return processedLines;
 }
