@@ -16,13 +16,16 @@ export function activate(context: vscode.ExtensionContext) {
 		const searchResults = searchEditor.document.getText();
 
 		// テキストを加工する
-		const separeta_char = vscode.workspace.getConfiguration().get<string>("capture-search-result.separator", "♪");
+		let separeta_char = vscode.workspace.getConfiguration().get<string>("capture-search-result.separator", "⋮");
+		if ("" === separeta_char) {
+			separeta_char = "⋮";
+		}
 		const processedResults = processSearchResults(searchResults, separeta_char);
 
 		if (processedResults.length !== 0) {
 			// 加工した文字列を保持する
 			vscode.env.clipboard.writeText(processedResults.join('\n'));
-			vscode.window.showInformationMessage('Copied');
+			vscode.window.showInformationMessage(`Copied. separeted by "${separeta_char}".`);
 		} else {
 			vscode.window.showErrorMessage('Nothing to copy was found.');
 		}
