@@ -8,6 +8,7 @@ RUN curl -fsSL https://deb.nodesource.com/setup_21.x | bash
 RUN apt install -y nodejs
 
 RUN npm install -g yo generator-code
+RUN npm install -g vsce
 
 RUN apt-get update
 RUN apt-get install -y git
