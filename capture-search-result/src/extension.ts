@@ -57,11 +57,11 @@ function processSearchResults(searchResults: string, separeta_char: string): Arr
 			currentFileName = line.trim().replace(':', '');
 		} else {
 			// 検索結果とみなす
-			const match = line.match(/^\s*(\d+)\s*(.*)$/);
+			const match = line.match(/^\s*(\d+):*\s*(.*)$/);
 			if (match) {
-			const row_no = match[1];
-			const search_res = match[2];
-			processedLines.push(`${currentFileName}${separeta_char}${row_no}${separeta_char}${search_res}`);
+				const row_no = match[1];
+				const search_res = match[2];
+				processedLines.push(`${currentFileName}${separeta_char}${row_no}${separeta_char}${search_res}`);
 			}
 		}
 	});
