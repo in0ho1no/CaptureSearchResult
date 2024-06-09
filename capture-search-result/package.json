@@ -38,7 +38,7 @@
         "properties": {
             "separator": {
                 "type": "string",
-                "default": "♪",
+                "default": "⋮",
                 "description": "Separator character used for processing search results"
             }
         }
