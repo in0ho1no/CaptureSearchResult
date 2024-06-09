@@ -22,7 +22,7 @@ export function activate(context: vscode.ExtensionContext) {
 		if (processedResults.length !== 0) {
 			// 加工した文字列を保持する
 			vscode.env.clipboard.writeText(processedResults.join('\n'));
-			vscode.window.showInformationMessage('Copied');
+			vscode.window.showInformationMessage(`Copied. separeted by ${separeta_char}.`);
 		} else {
 			vscode.window.showErrorMessage('Nothing to copy was found.');
 		}
