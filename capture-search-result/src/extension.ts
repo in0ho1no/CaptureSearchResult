@@ -3,7 +3,59 @@ import * as vscode from 'vscode';
 // This method is called when your extension is activated
 export function activate(context: vscode.ExtensionContext) {
 	console.log('Congratulations, your extension "capture-search-result" is now active!');
+
+	const copySearchResultsCommand = vscode.commands.registerCommand('capture-search-result.copySearchResults', async () => {
+		// 表示中のエディタを取得する
+		const searchEditor = vscode.window.activeTextEditor;
+		if (!searchEditor) {
+			vscode.window.showWarningMessage('No active search results to copy');
+			return;
+		}
+
+		// 表示中のテキストを取得する
+		const searchResults = searchEditor.document.getText();
+
+		// テキストを加工してクリップボードに保持する
+		const separeta_char = vscode.workspace.getConfiguration().get<string>("capture-search-result.separator", "♪");
+		const processedResults = processSearchResults(searchResults, separeta_char);
+		vscode.env.clipboard.writeText(processedResults.join('\n'));
+	});
+	
+	context.subscriptions.push(copySearchResultsCommand);
 }
 
 // This method is called when your extension is deactivated
 export function deactivate() {}
+
+/**
+ * 検索結果を解析し、ファイル名、行番号、検索結果を加工して返す
+ * @param searchResults 解析対象の検索結果文字列
+ * @param separator 区切り文字として使用する文字列
+ * @returns 加工された文字列
+ */
+function processSearchResults(searchResults: string, separeta_char: string): Array<string> {
+	const lines = searchResults.split('\n');
+	const processedLines:Array<string> = [];
+	let currentFileName = '';
+
+	lines.forEach(line => {
+		if (line.trim().length === 0) {
+			return;
+		}
+
+		if (!line.startsWith(' ')) {
+			// ファイル名とみなす
+			currentFileName = line.trim().replace(':', '');
+		} else {
+			// 検索結果とみなす
+			const match = line.match(/^\s*(\d+)\s*(.*)$/);
+			if (match) {
+			const row_no = match[1];
+			const search_res = match[2];
+			processedLines.push(`${currentFileName}${separeta_char}${row_no}${separeta_char}${search_res}`);
+			}
+		}
+	});
+
+	return processedLines;
+}
