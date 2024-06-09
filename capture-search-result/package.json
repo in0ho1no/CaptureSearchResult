@@ -31,7 +31,18 @@
         "key": "ctrl+alt+c",
         "when": "inSearchEditor"
       }
-    ]
+    ],
+    "configuration": {
+        "type": "object",
+        "title": "Capture Search Result Configuration",
+        "properties": {
+            "separator": {
+                "type": "string",
+                "default": "♪",
+                "description": "Separator character used for processing search results"
+            }
+        }
+    }
   },
   "scripts": {
     "vscode:prepublish": "npm run package",

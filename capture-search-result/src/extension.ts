@@ -16,7 +16,7 @@ export function activate(context: vscode.ExtensionContext) {
 		const searchResults = searchEditor.document.getText();
 
 		// テキストを加工してクリップボードに保持する
-		const separeta_char = '♪';
+		const separeta_char = vscode.workspace.getConfiguration().get<string>("capture-search-result.separator", "♪");
 		const processedResults = processSearchResults(searchResults, separeta_char);
 		vscode.env.clipboard.writeText(processedResults.join('\n'));
 	});
