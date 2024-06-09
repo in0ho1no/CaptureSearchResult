@@ -73,3 +73,29 @@ DockerImageが存在しないときに必要となる手順。
     nUser@a265575f6bbd:/workspaces/CaptureSearchResult$ npm -v
     10.5.0
     nUser@a265575f6bbd:/workspaces/CaptureSearchResult$
+
+## プロジェクト作成
+
+プロジェクトのテンプレとなる環境を作成する
+
+    yo code
+
+選択肢は以下とした。
+
+    ? What type of extension do you want to create? New Extension (TypeScript)
+    ? What's the name of your extension? Capture Search Result
+    ? What's the identifier of your extension? capture-search-result
+    ? What's the description of your extension? This extension capture search result.
+    ? Initialize a git repository? No
+    ? Which bundler to use? webpack
+    ? Which package manager to use? npm
+
+## Githubからcloneしてきた場合の手順
+
+1. exec.shを実行する  
+    - dockerのサービス起動
+    - VSCodeのworkspace起動
+1. VSCodeの拡張機能を利用してworkspaceをコンテナ上で開き直す  
+    - dockerfileからDockerImageのビルド
+1. npm iコマンドを実行する
+    - package.jsonに記載の依存パッケージダウンロード
