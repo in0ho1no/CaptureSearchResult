@@ -53,8 +53,14 @@ function processSearchResults(searchResults: string, separeta_char: string): Arr
 		}
 
 		if (!line.startsWith(' ')) {
-			// ファイル名とみなす
-			currentFileName = line.trim().replace(':', '');
+			const match = line.match(/^\d+ 件の結果 - \d+ ファイル$/);
+			if (match) {
+				// 検索サマリとみなす
+				processedLines.push(line);
+			} else {
+				// ファイル名とみなす
+				currentFileName = line.trim().replace(':', '');
+			}
 		} else {
 			// 検索結果とみなす
 			const match = line.match(/^\s*(\d+):*\s*(.*)$/);
