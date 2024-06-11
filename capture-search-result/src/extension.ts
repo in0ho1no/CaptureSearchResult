@@ -48,18 +48,19 @@ function getSeparateChar(): string {
 /**
  * 検索結果を解析し、ファイル名、行番号、検索結果を加工して返す
  * @param searchResults 解析対象の検索結果文字列
- * @param separator 区切り文字として使用する文字列
+ * @param separateChar 区切り文字として使用する文字列
  * @returns 加工された文字列
  */
-function processSearchResults(searchResults: string, separeta_char: string): Array<string> {
+function processSearchResults(searchResults: string, separateChar: string): Array<string> {
 	const lines = searchResults.split('\n');
 	const processedLines:Array<string> = [];
 	let currentFileName = '';
+	let findCount = 0;
 
-	// 列のタイトル行を付与する
+	// 列のタイトル行を先頭に付与する
 	const processedLinesWithTitle = addColumnTitleRow(processedLines);
 
-	// 検索結果のサマリを付与する
+	// 検索結果のサマリを先頭に付与する
 	const processedLinesWithSummary = addSummary(lines, processedLinesWithTitle);
 
 	lines.forEach(line => {
@@ -74,9 +75,17 @@ function processSearchResults(searchResults: string, separeta_char: string): Arr
 			// 検索結果とみなす
 			const match = line.match(/^\s*(\d+):*\s*(.*)$/);
 			if (match) {
+				findCount = findCount + 1;
 				const row_no = match[1];
 				const search_res = match[2];
-				processedLinesWithSummary.push(`${currentFileName}${separeta_char}${row_no}${separeta_char}${search_res}`);
+				const findResult = [
+					findCount,
+					currentFileName,
+					row_no,
+					search_res,
+				];
+				const findResultRow = findResult.join(separateChar);
+				processedLinesWithSummary.push(findResultRow);
 			}
 		}
 	});
@@ -95,6 +104,7 @@ function addColumnTitleRow(targetLines: Array<string>): Array<string> {
 	if (copyColumnTitleRow) {
 		const separateChar = getSeparateChar();
 		const columnTitle = [
+			"No.",
 			"fileName",
 			"lineNumber",
 			"searchResult",
