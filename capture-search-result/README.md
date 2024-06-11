@@ -11,8 +11,4 @@ Simplify your workflow and enhance your productivity with Capture Search Result!
 
 > Shortcut is only available within the Search Editor.
 
-## Settings
-
-You can set the delimiter that is used to process the search results.
-
-    "capture-search-result.separator": "♪"
+> Restart Visual Studio Code after installing this extension.
