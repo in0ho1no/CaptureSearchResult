@@ -15,4 +15,4 @@ Simplify your workflow and enhance your productivity with Capture Search Result!
 
 You can set the delimiter that is used to process the search results.
 
-    "capture-search-result.separator": "⋮"
+    "capture-search-result.separator": "♪"
