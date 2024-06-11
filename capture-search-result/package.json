@@ -36,9 +36,9 @@
         "type": "object",
         "title": "Capture Search Result Configuration",
         "properties": {
-            "separator": {
+            "capture-search-result.separator": {
                 "type": "string",
-                "default": "⋮",
+                "default": "♪",
                 "description": "Separator character used for processing search results"
             }
         }

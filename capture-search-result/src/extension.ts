@@ -16,16 +16,13 @@ export function activate(context: vscode.ExtensionContext) {
 		const searchResults = searchEditor.document.getText();
 
 		// テキストを加工する
-		let separeta_char = vscode.workspace.getConfiguration().get<string>("capture-search-result.separator", "⋮");
-		if ("" === separeta_char) {
-			separeta_char = "⋮";
-		}
-		const processedResults = processSearchResults(searchResults, separeta_char);
+		const separate_char = getSeparateChar()
+		const processedResults = processSearchResults(searchResults, separate_char);
 
 		if (processedResults.length !== 0) {
 			// 加工した文字列を保持する
 			vscode.env.clipboard.writeText(processedResults.join('\n'));
-			vscode.window.showInformationMessage(`Copied. separeted by "${separeta_char}".`);
+			vscode.window.showInformationMessage(`Copied. separeted by "${separate_char}".`);
 		} else {
 			vscode.window.showErrorMessage('Nothing to copy was found.');
 		}
@@ -35,6 +32,18 @@ export function activate(context: vscode.ExtensionContext) {
 
 // This method is called when your extension is deactivated
 export function deactivate() {}
+
+/**
+ *  区切り文字を取得する
+ * @returns 区切り文字
+ */
+function getSeparateChar():string {
+	let separator = vscode.workspace.getConfiguration().get<string>("capture-search-result.separator", "♪");
+	if ("" === separator) {
+		separator = "♪";
+	}
+	return separator;
+}
 
 /**
  * 検索結果を解析し、ファイル名、行番号、検索結果を加工して返す
