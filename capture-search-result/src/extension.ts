@@ -4,7 +4,7 @@ import * as vscode from 'vscode';
 export function activate(context: vscode.ExtensionContext) {
 	console.log('Congratulations, your extension "capture-search-result" is now active!');
 
-	const copySearchResultsCommand = vscode.commands.registerCommand('capture-search-result.copySearchResults', async () => {
+	const copySearchResultsCommand = vscode.commands.registerCommand('capture-search-result.copySearchResults', () => {
 		// 表示中のエディタを取得する
 		const searchEditor = vscode.window.activeTextEditor;
 		if (!searchEditor) {
@@ -37,7 +37,7 @@ export function deactivate() {}
  *  区切り文字を取得する
  * @returns 区切り文字
  */
-function getSeparateChar():string {
+function getSeparateChar(): string {
 	let separator = vscode.workspace.getConfiguration().get<string>("capture-search-result.separator", "♪");
 	if ("" === separator) {
 		separator = "♪";
@@ -56,29 +56,59 @@ function processSearchResults(searchResults: string, separeta_char: string): Arr
 	const processedLines:Array<string> = [];
 	let currentFileName = '';
 
+	// 検索結果のサマリを付与する
+	const processedLinesWithSummary = addSummary(lines, processedLines);
+
 	lines.forEach(line => {
 		if (line.trim().length === 0) {
 			return;
 		}
 
 		if (!line.startsWith(' ')) {
-			const match = line.match(/^\d+ 件の結果 - \d+ ファイル$/);
-			if (match) {
-				// 検索サマリとみなす
-				processedLines.push(line);
-			} else {
-				// ファイル名とみなす
-				currentFileName = line.trim().replace(':', '');
-			}
+			// ファイル名とみなす
+			currentFileName = line.trim().replace(':', '');
 		} else {
 			// 検索結果とみなす
 			const match = line.match(/^\s*(\d+):*\s*(.*)$/);
 			if (match) {
 				const row_no = match[1];
 				const search_res = match[2];
-				processedLines.push(`${currentFileName}${separeta_char}${row_no}${separeta_char}${search_res}`);
+				processedLinesWithSummary.push(`${currentFileName}${separeta_char}${row_no}${separeta_char}${search_res}`);
 			}
 		}
 	});
-	return processedLines;
+	return processedLinesWithSummary;
+}
+
+/**
+ * サマリの情報を取得し、文字列配列の先頭に付与して返す
+ * 設定がOFFの場合、与えられた文字列配列のまま返す
+ * 
+ * @param {Array<string>} searchResults - 解析対象の文字列配列.
+ * @param {Array<string>} targetLines - サマリを付与したい文字列配列
+ * @returns {Array<string>} - サマリの情報を保持した文字列配列.
+ */
+function addSummary(searchResults: Array<string>, targetLines: Array<string>): Array<string> {
+	const copySummary = vscode.workspace.getConfiguration().get<boolean>("capture-search-result.copy-summary", true);
+	if (copySummary) {
+		const summaries = getSummaries(searchResults);
+		if (summaries.length >= 1) {
+			return [
+				summaries[0],
+				...targetLines
+			];
+		}
+	}
+	return targetLines;
+}
+
+/**
+ * 検索結果の文字列配列からサマリを取得する。
+ * 
+ * @param {Array<string>} searchResults - 検索結果の文字列配列.
+ * @returns {Array<string>} - 取得したサマリ.
+ */
+function getSummaries(searchResults: Array<string>): Array<string> {
+	const regex = /^\d+ 件の結果 - \d+ ファイル$/;
+	return searchResults.filter(str => regex.test(str));
 }

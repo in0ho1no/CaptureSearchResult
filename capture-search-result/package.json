@@ -40,6 +40,11 @@
                 "type": "string",
                 "default": "♪",
                 "description": "Separator character used for processing search results"
+            },
+            "capture-search-result.copy-summary": {
+                "type": "boolean",
+                "default": "true",
+                "description": "Include search summary when copying search results. True: include / False: do not include"
             }
         }
     }
