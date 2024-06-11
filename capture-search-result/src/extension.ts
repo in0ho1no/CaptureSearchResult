@@ -53,17 +53,36 @@ function getSeparateChar(): string {
  */
 function processSearchResults(searchResults: string, separateChar: string): Array<string> {
 	const lines = searchResults.split('\n');
+	let processedLines:Array<string> = [];
+
+	// 検索結果を1行ずつに加工する
+	processedLines = processSearchResultsLineByLine(lines, separateChar);
+
+	if (processedLines.length !== 0) {
+		// 列のタイトル行を先頭に付与する
+		processedLines = addColumnTitleRow(processedLines, separateChar);
+	}
+
+	// 検索結果のサマリを先頭に付与する
+	processedLines = addSummary(lines, processedLines);
+
+	return processedLines;
+}
+
+/**
+ * 検索結果の文字列配列を1行ずつの情報に加工して返す
+ * ファイル名と行数／検索結果を1行にする
+ * 
+ * @param {Array<string>} searchResults - 解析対象の文字列配列.
+ * @param separateChar 区切り文字として使用する文字列
+ * @returns {Array<string>} - 1行ずつに加工した文字列配列
+ */
+function processSearchResultsLineByLine(searchResults: Array<string>, separateChar: string): Array<string> {
 	const processedLines:Array<string> = [];
 	let currentFileName = '';
 	let findCount = 0;
 
-	// 列のタイトル行を先頭に付与する
-	const processedLinesWithTitle = addColumnTitleRow(processedLines);
-
-	// 検索結果のサマリを先頭に付与する
-	const processedLinesWithSummary = addSummary(lines, processedLinesWithTitle);
-
-	lines.forEach(line => {
+	searchResults.forEach(line => {
 		if (line.trim().length === 0) {
 			return;
 		}
@@ -85,11 +104,11 @@ function processSearchResults(searchResults: string, separateChar: string): Arra
 					search_res,
 				];
 				const findResultRow = findResult.join(separateChar);
-				processedLinesWithSummary.push(findResultRow);
+				processedLines.push(findResultRow);
 			}
 		}
 	});
-	return processedLinesWithSummary;
+	return processedLines;
 }
 
 /**
@@ -97,17 +116,17 @@ function processSearchResults(searchResults: string, separateChar: string): Arra
  * 設定がOFFの場合、与えられた文字列配列のまま返す
  * 
  * @param {Array<string>} targetLines - タイトル行を付与したい文字列配列
+ * @param separateChar 区切り文字として使用する文字列
  * @returns {Array<string>} - タイトル行を付与した文字列配列.
  */
-function addColumnTitleRow(targetLines: Array<string>): Array<string> {
+function addColumnTitleRow(targetLines: Array<string>, separateChar: string): Array<string> {
 	const copyColumnTitleRow = vscode.workspace.getConfiguration().get<boolean>("capture-search-result.add-columnTitleRow", true);
 	if (copyColumnTitleRow) {
-		const separateChar = getSeparateChar();
 		const columnTitle = [
 			"No.",
-			"fileName",
-			"lineNumber",
-			"searchResult",
+			"ファイル名",
+			"行数",
+			"検索結果",
 		];
 		const columnTitleRow = columnTitle.join(separateChar);
 
