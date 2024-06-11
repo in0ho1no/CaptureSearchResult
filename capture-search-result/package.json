@@ -2,7 +2,7 @@
   "name": "capture-search-result",
   "displayName": "Capture Search Result",
   "description": "This extension capture search result.",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "engines": {
     "vscode": "^1.90.0"
   },
@@ -36,10 +36,20 @@
         "type": "object",
         "title": "Capture Search Result Configuration",
         "properties": {
-            "separator": {
+            "capture-search-result.separator": {
                 "type": "string",
-                "default": "⋮",
+                "default": "♪",
                 "description": "Separator character used for processing search results"
+            },
+            "capture-search-result.copy-summary": {
+                "type": "boolean",
+                "default": "true",
+                "description": "Include search summary when copying search results. True: include / False: do not include"
+            },
+            "capture-search-result.add-columnTitleRow": {
+                "type": "boolean",
+                "default": "true",
+                "description": "Include column title row when copying search results. True: include / False: do not include"
             }
         }
     }
