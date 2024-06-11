@@ -16,13 +16,13 @@ export function activate(context: vscode.ExtensionContext) {
 		const searchResults = searchEditor.document.getText();
 
 		// テキストを加工する
-		const separate_char = getSeparateChar()
-		const processedResults = processSearchResults(searchResults, separate_char);
+		const separateChar = getSeparateChar();
+		const processedResults = processSearchResults(searchResults, separateChar);
 
 		if (processedResults.length !== 0) {
 			// 加工した文字列を保持する
 			vscode.env.clipboard.writeText(processedResults.join('\n'));
-			vscode.window.showInformationMessage(`Copied. separeted by "${separate_char}".`);
+			vscode.window.showInformationMessage(`Copied. separeted by "${separateChar}".`);
 		} else {
 			vscode.window.showErrorMessage('Nothing to copy was found.');
 		}
@@ -56,8 +56,11 @@ function processSearchResults(searchResults: string, separeta_char: string): Arr
 	const processedLines:Array<string> = [];
 	let currentFileName = '';
 
+	// 列のタイトル行を付与する
+	const processedLinesWithTitle = addColumnTitleRow(processedLines);
+
 	// 検索結果のサマリを付与する
-	const processedLinesWithSummary = addSummary(lines, processedLines);
+	const processedLinesWithSummary = addSummary(lines, processedLinesWithTitle);
 
 	lines.forEach(line => {
 		if (line.trim().length === 0) {
@@ -78,6 +81,32 @@ function processSearchResults(searchResults: string, separeta_char: string): Arr
 		}
 	});
 	return processedLinesWithSummary;
+}
+
+/**
+ * 列のタイトル行を文字列配列の先頭に付与して返す
+ * 設定がOFFの場合、与えられた文字列配列のまま返す
+ * 
+ * @param {Array<string>} targetLines - タイトル行を付与したい文字列配列
+ * @returns {Array<string>} - タイトル行を付与した文字列配列.
+ */
+function addColumnTitleRow(targetLines: Array<string>): Array<string> {
+	const copyColumnTitleRow = vscode.workspace.getConfiguration().get<boolean>("capture-search-result.add-columnTitleRow", true);
+	if (copyColumnTitleRow) {
+		const separateChar = getSeparateChar();
+		const columnTitle = [
+			"fileName",
+			"lineNumber",
+			"searchResult",
+		];
+		const columnTitleRow = columnTitle.join(separateChar);
+
+		return [
+			columnTitleRow,
+			...targetLines
+		];
+	}
+	return targetLines;
 }
 
 /**

@@ -45,6 +45,11 @@
                 "type": "boolean",
                 "default": "true",
                 "description": "Include search summary when copying search results. True: include / False: do not include"
+            },
+            "capture-search-result.add-columnTitleRow": {
+                "type": "boolean",
+                "default": "true",
+                "description": "Include column title row when copying search results. True: include / False: do not include"
             }
         }
     }
