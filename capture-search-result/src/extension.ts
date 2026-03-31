@@ -83,29 +83,33 @@ export function processSearchResultsLineByLine(searchResults: Array<string>, sep
 	let findCount = 0;
 
 	searchResults.forEach(line => {
-		if (line.trim().length === 0) {
-			return;
-		}
-
-		if (!line.startsWith(' ')) {
-			// ファイル名とみなす
-			currentFileName = line.trim().replace(':', '');
-		} else {
-			// 検索結果とみなす
-			const match = line.match(/^\s*(\d+):\s*(.*)$/);
-			if (match) {
-				findCount = findCount + 1;
-				const row_no = match[1];
-				const search_res = match[2];
-				const findResult = [
-					findCount,
-					currentFileName,
-					row_no,
-					search_res,
-				];
-				const findResultRow = findResult.join(separateChar);
-				processedLines.push(findResultRow);
+		try {
+			if (line.trim().length === 0) {
+				return;
 			}
+
+			if (!line.startsWith(' ')) {
+				// ファイル名とみなす
+				currentFileName = line.trim().replace(':', '');
+			} else {
+				// 検索結果とみなす
+				const match = line.match(/^\s*(\d+):\s*(.*)$/);
+				if (match) {
+					findCount = findCount + 1;
+					const row_no = match[1];
+					const search_res = match[2];
+					const findResult = [
+						findCount,
+						currentFileName,
+						row_no,
+						search_res,
+					];
+					const findResultRow = findResult.join(separateChar);
+					processedLines.push(findResultRow);
+				}
+			}
+		} catch (error) {
+			console.error(`Failed to process line: "${line}"`, error);
 		}
 	});
 	return processedLines;
