@@ -43,6 +43,12 @@ No.♪ファイル名♪行数♪検索結果
 | `capture-search-result.copy-summary` | boolean | `true` | Prepend search summary line |
 | `capture-search-result.add-columnTitleRow` | boolean | `true` | Prepend column title row |
 
+## Excel Integration (Optional)
+
+コピーした検索結果を Excel へ `Ctrl+Shift+V` 1つで貼り付け・列分割まで行う AutoHotKey スクリプトを同梱しています。
+
+詳細はリポジトリルートの [README](https://github.com/in0ho1no/CaptureSearchResult/blob/main/README.md) を参照してください。
+
 ## Requirements
 
 - Visual Studio Code `^1.110.0`
