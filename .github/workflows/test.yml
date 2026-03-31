@@ -46,3 +46,7 @@ jobs:
       - name: Run tests
         working-directory: capture-search-result
         run: xvfb-run --auto-servernum npm test
+
+      - name: Check vulnerabilities
+        working-directory: capture-search-result
+        run: npm audit --audit-level=high
