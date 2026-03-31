@@ -92,7 +92,7 @@ function processSearchResultsLineByLine(searchResults: Array<string>, separateCh
 			currentFileName = line.trim().replace(':', '');
 		} else {
 			// 検索結果とみなす
-			const match = line.match(/^\s*(\d+):*\s*(.*)$/);
+			const match = line.match(/^\s*(\d+):\s*(.*)$/);
 			if (match) {
 				findCount = findCount + 1;
 				const row_no = match[1];
