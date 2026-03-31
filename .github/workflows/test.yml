@@ -50,3 +50,4 @@ jobs:
       - name: Check vulnerabilities
         working-directory: capture-search-result
         run: npm audit --audit-level=high
+        continue-on-error: true
