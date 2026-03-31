@@ -51,7 +51,7 @@ function getSeparateChar(): string {
  * @param separateChar 区切り文字として使用する文字列
  * @returns 加工された文字列
  */
-function processSearchResults(searchResults: string, separateChar: string): Array<string> {
+export function processSearchResults(searchResults: string, separateChar: string): Array<string> {
 	const lines = searchResults.split('\n');
 	let processedLines:Array<string> = [];
 
@@ -77,7 +77,7 @@ function processSearchResults(searchResults: string, separateChar: string): Arra
  * @param separateChar 区切り文字として使用する文字列
  * @returns {Array<string>} - 1行ずつに加工した文字列配列
  */
-function processSearchResultsLineByLine(searchResults: Array<string>, separateChar: string): Array<string> {
+export function processSearchResultsLineByLine(searchResults: Array<string>, separateChar: string): Array<string> {
 	const processedLines:Array<string> = [];
 	let currentFileName = '';
 	let findCount = 0;
@@ -166,7 +166,7 @@ function addSummary(searchResults: Array<string>, targetLines: Array<string>): A
  * @param {Array<string>} searchResults - 検索結果の文字列配列.
  * @returns {Array<string>} - 取得したサマリ.
  */
-function getSummaries(searchResults: Array<string>): Array<string> {
+export function getSummaries(searchResults: Array<string>): Array<string> {
 	const regex = /^\d+ 件の結果 - \d+ ファイル$/;
 	return searchResults.filter(str => regex.test(str));
 }
