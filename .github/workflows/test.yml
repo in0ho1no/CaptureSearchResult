@@ -1,0 +1,52 @@
+name: Test
+
+on:
+  push:
+    branches:
+      - '**'
+  pull_request:
+    branches:
+      - develop
+      - main
+
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'npm'
+          cache-dependency-path: capture-search-result/package-lock.json
+
+      - name: Install dependencies
+        working-directory: capture-search-result
+        run: npm ci
+
+      - name: Install VSCode dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            libnspr4 \
+            libnss3 \
+            libatk1.0-0 \
+            libatk-bridge2.0-0 \
+            libgtk-3-0 \
+            libgbm1 \
+            libasound2t64 \
+            xvfb
+
+      - name: Run tests
+        working-directory: capture-search-result
+        run: xvfb-run --auto-servernum npm test
+
+      - name: Check vulnerabilities
+        working-directory: capture-search-result
+        run: npm audit --audit-level=high
