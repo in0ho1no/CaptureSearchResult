@@ -12,7 +12,9 @@
 		"vscode": {
 			"extensions": [
 				"mhutchie.git-graph",
-				"amodio.tsl-problem-matcher"
+				"eamodio.gitlens",
+				"amodio.tsl-problem-matcher",
+				"dbaeumer.vscode-eslint"
 			]
 		}
 	}
