@@ -4,24 +4,46 @@
 ^+v::
 {
     try {
+        ; クリップボードが空の場合終了
+        if (A_Clipboard = "")
+            return
+
         ; Excelオブジェクトを取得
         xl := ComObjActive("Excel.Application")
-        
-        ; 1. 貼り付けを実行
-        xl.ActiveSheet.Paste
-        
-        ; 2. 貼り付けた範囲（現在の選択範囲）を取得
-        sel := xl.Selection
-        
-        ; 3. 範囲内に「♪」が含まれているか検索
-        ; Findメソッドで最初に見つかったセルを返します
-        found := sel.Find("♪")
-        
+        cell := xl.ActiveCell
+
+        ; 描画更新を一時的に停止させる
+        xl.ScreenUpdating := False
+
+        ; クリップボードのデータを保持
+        text := A_Clipboard
+
+        ; 改行で分割
+        rows := StrSplit(StrReplace(text, "`r"), "`n")
+
+        rowCount := rows.Length
+
+        ; COM用2次元配列（1列）
+        arr := ComObjArray(12, rowCount, 1)  ; 12 = VT_VARIANT
+
+        Loop rowCount
+        {
+            arr[A_Index-1, 0] := rows[A_Index]
+        }
+
+        ; 書き込んだ範囲
+        rng := xl.Range(
+            cell,
+            xl.Cells(cell.Row + rowCount - 1, cell.Column)
+        )
+
+        rng.Value := arr
+
+        ; 範囲内に「♪」が含まれていれば列分割
+        found := rng.Find("♪", , , 2)
         if (found) {
-            ; 「♪」が見つかった場合のみ「区切り位置」を実行
-            ; 引数を詳細に設定することで、Excelの「記憶」に頼らず挙動を固定します
-            sel.TextToColumns(
-                sel,    ; Destination: 出力先
+            rng.TextToColumns(
+                rng,    ; Destination: 出力先
                 1,      ; DataType: xlDelimited (区切り形式)
                 1,      ; TextQualifier: xlTextQualifierDoubleQuote (引用符: ")
                 false,  ; ConsecutiveDelimiter: 連続した区切り文字を1つとして扱うか
@@ -33,11 +55,13 @@
                 "♪"     ; OtherChar: その他の文字
             )
         }
-        ; 見つからない場合は何もしない（＝通常の貼り付けのみで終了）
 
-	} catch Error as e {
-        ; エラーの内容を正しく表示するように修正
-        MsgBox "エラーが発生しました:`n" e.Message
+        ; 描画更新を再開させる
+        xl.ScreenUpdating := True
+    } catch Error as e {
+        ; エラー表示
+        MsgBox "エラー:`n" e.Message
+        try xl.ScreenUpdating := True
     }
 }
 #HotIf
