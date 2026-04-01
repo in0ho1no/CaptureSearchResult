@@ -6,22 +6,33 @@
     try {
         ; Excelオブジェクトを取得
         xl := ComObjActive("Excel.Application")
-        
-        ; 1. 貼り付けを実行
-        xl.ActiveSheet.Paste
-        
-        ; 2. 貼り付けた範囲（現在の選択範囲）を取得
-        sel := xl.Selection
-        
-        ; 3. 範囲内に「♪」が含まれているか検索
-        ; Findメソッドで最初に見つかったセルを返します
-        found := sel.Find("♪")
-        
+        cell := xl.ActiveCell
+
+        ; クリップボードのデータを保持
+        text := A_Clipboard
+
+        ; 改行で分割
+        rows := StrSplit(text, "`n")
+
+        ; Excelに縦方向へ書き込み
+        for i, row in rows
+        {
+            xl.Cells(cell.Row + i - 1, cell.Column).Value := RTrim(row, "`r")
+        }
+
+        ; 書き込んだ範囲
+        rng := xl.Range(
+            cell,
+            xl.Cells(cell.Row + rows.Length - 1, cell.Column)
+        )
+
+        ; 範囲内に「♪」が含まれているか検索
+        found := rng.Find("♪")
+
         if (found) {
-            ; 「♪」が見つかった場合のみ「区切り位置」を実行
-            ; 引数を詳細に設定することで、Excelの「記憶」に頼らず挙動を固定します
-            sel.TextToColumns(
-                sel,    ; Destination: 出力先
+            ; ♪で列分割
+            rng.TextToColumns(
+                rng,    ; Destination: 出力先
                 1,      ; DataType: xlDelimited (区切り形式)
                 1,      ; TextQualifier: xlTextQualifierDoubleQuote (引用符: ")
                 false,  ; ConsecutiveDelimiter: 連続した区切り文字を1つとして扱うか
@@ -33,10 +44,8 @@
                 "♪"     ; OtherChar: その他の文字
             )
         }
-        ; 見つからない場合は何もしない（＝通常の貼り付けのみで終了）
-
 	} catch Error as e {
-        ; エラーの内容を正しく表示するように修正
+        ; エラー表示
         MsgBox "エラーが発生しました:`n" e.Message
     }
 }
