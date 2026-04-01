@@ -4,9 +4,16 @@
 ^+v::
 {
     try {
+        ; クリップボードが空の場合終了
+        if (A_Clipboard = "")
+            return
+
         ; Excelオブジェクトを取得
         xl := ComObjActive("Excel.Application")
         cell := xl.ActiveCell
+
+        ; 描画更新を一時的に停止させる
+        xl.ScreenUpdating := False
 
         ; クリップボードのデータを保持
         text := A_Clipboard
@@ -14,23 +21,27 @@
         ; 改行で分割
         rows := StrSplit(text, "`n")
 
-        ; Excelに縦方向へ書き込み
-        for i, row in rows
+        rowCount := rows.Length
+
+        ; COM用2次元配列（1列）
+        arr := ComObjArray(12, rowCount, 1)  ; 12 = VT_VARIANT
+
+        Loop rowCount
         {
-            xl.Cells(cell.Row + i - 1, cell.Column).Value := RTrim(row, "`r")
+            arr[A_Index-1, 0] := RTrim(rows[A_Index], "`r")
         }
 
         ; 書き込んだ範囲
         rng := xl.Range(
             cell,
-            xl.Cells(cell.Row + rows.Length - 1, cell.Column)
+            xl.Cells(cell.Row + rowCount - 1, cell.Column)
         )
 
-        ; 範囲内に「♪」が含まれているか検索
-        found := rng.Find("♪")
+        rng.Value := arr
 
+        ; 範囲内に「♪」が含まれていれば列分割
+        found := rng.Find("♪")
         if (found) {
-            ; ♪で列分割
             rng.TextToColumns(
                 rng,    ; Destination: 出力先
                 1,      ; DataType: xlDelimited (区切り形式)
@@ -44,9 +55,13 @@
                 "♪"     ; OtherChar: その他の文字
             )
         }
-	} catch Error as e {
+
+        ; 描画更新を再開させる
+        xl.ScreenUpdating := True
+    } catch Error as e {
         ; エラー表示
-        MsgBox "エラーが発生しました:`n" e.Message
+        MsgBox "エラー:`n" e.Message
+        try xl.ScreenUpdating := True
     }
 }
 #HotIf
