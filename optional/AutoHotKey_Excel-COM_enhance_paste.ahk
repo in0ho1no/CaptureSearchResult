@@ -19,7 +19,7 @@
         text := A_Clipboard
 
         ; 改行で分割
-        rows := StrSplit(text, "`n")
+        rows := StrSplit(StrReplace(text, "`r"), "`n")
 
         rowCount := rows.Length
 
@@ -28,7 +28,7 @@
 
         Loop rowCount
         {
-            arr[A_Index-1, 0] := RTrim(rows[A_Index], "`r")
+            arr[A_Index-1, 0] := rows[A_Index]
         }
 
         ; 書き込んだ範囲
@@ -40,7 +40,7 @@
         rng.Value := arr
 
         ; 範囲内に「♪」が含まれていれば列分割
-        found := rng.Find("♪")
+        found := rng.Find("♪", , , 2)
         if (found) {
             rng.TextToColumns(
                 rng,    ; Destination: 出力先
