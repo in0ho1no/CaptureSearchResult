@@ -8,15 +8,19 @@
         if (A_Clipboard = "")
             return
 
+        ; クリップボードのデータを保持
+        text := A_Clipboard
+
+        ; ♪ が含まれていなければ何もしない
+        if (!InStr(text, "♪"))
+            return
+
         ; Excelオブジェクトを取得
         xl := ComObjActive("Excel.Application")
         cell := xl.ActiveCell
 
         ; 描画更新を一時的に停止させる
         xl.ScreenUpdating := False
-
-        ; クリップボードのデータを保持
-        text := A_Clipboard
 
         ; 改行で分割
         rows := StrSplit(StrReplace(text, "`r"), "`n")
