@@ -1,11 +1,18 @@
 ﻿#Requires AutoHotkey v2.0
 
 #HotIf WinActive("ahk_class XLMAIN")
-^+v::
+^!v::
 {
     try {
         ; クリップボードが空の場合終了
         if (A_Clipboard = "")
+            return
+
+        ; クリップボードのデータを保持
+        text := A_Clipboard
+
+        ; ♪ が含まれていなければ何もしない
+        if (!InStr(text, "♪"))
             return
 
         ; Excelオブジェクトを取得
@@ -14,9 +21,6 @@
 
         ; 描画更新を一時的に停止させる
         xl.ScreenUpdating := False
-
-        ; クリップボードのデータを保持
-        text := A_Clipboard
 
         ; 改行で分割
         rows := StrSplit(StrReplace(text, "`r"), "`n")

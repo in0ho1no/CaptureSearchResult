@@ -4,28 +4,28 @@
 [![Test](https://github.com/in0ho1no/CaptureSearchResult/actions/workflows/test.yml/badge.svg)](https://github.com/in0ho1no/CaptureSearchResult/actions/workflows/test.yml)
 [![Release](https://img.shields.io/github/v/release/in0ho1no/CaptureSearchResult)](https://github.com/in0ho1no/CaptureSearchResult/releases)
 
-A Visual Studio Code extension that copies search results to the clipboard in a structured format with a single shortcut. Results are formatted with a configurable separator, making them easy to paste into Excel or other spreadsheet tools.
+VSCode の検索結果を、ショートカットキー1つで構造化された形式のままクリップボードにコピーする拡張機能です。区切り文字で整形されるため、Excel などの表計算ソフトへそのまま貼り付けることができます。
 
-## Features
+## 機能
 
-- Copy search results to the clipboard with `Ctrl+Alt+C`
-- Output includes: sequential number, file path, line number, and matched text
-- Configurable field separator (default: `♪`)
-- Optionally prepend a column title row and search summary
+- `Ctrl+Alt+C` で検索結果をクリップボードにコピー
+- 出力内容：連番・ファイルパス・行番号・マッチしたテキスト
+- 区切り文字をカスタマイズ可能（デフォルト：`♪`）
+- 列タイトル行と検索サマリの先頭付与を設定で切り替え可能
 
-> The shortcut is only available within the Search Editor.
+> ショートカットは Search Editor 内でのみ有効です。
 
-> Restart Visual Studio Code after installing this extension.
+> インストール後は VSCode を再起動してください。
 
-## Output Format
+## 出力形式
 
-Each result row is formatted as:
+各結果行は以下の形式で出力されます：
 
 ```
 No.♪ファイル名♪行数♪検索結果
 ```
 
-If the summary and column title options are enabled (default), the full output looks like:
+サマリと列タイトルが有効な場合（デフォルト）、全体の出力は以下のようになります：
 
 ```
 3 件の結果 - 1 ファイル
@@ -35,20 +35,20 @@ No.♪ファイル名♪行数♪検索結果
 3♪/path/to/file.ts♪42♪yet another match
 ```
 
-## Settings
+## 設定
 
-| Setting | Type | Default | Description |
+| 設定項目 | 型 | デフォルト | 説明 |
 |---|---|---|---|
-| `capture-search-result.separator` | string | `♪` | Field separator character |
-| `capture-search-result.copy-summary` | boolean | `true` | Prepend search summary line |
-| `capture-search-result.add-columnTitleRow` | boolean | `true` | Prepend column title row |
+| `capture-search-result.separator` | string | `♪` | フィールドの区切り文字 |
+| `capture-search-result.copy-summary` | boolean | `true` | 検索サマリを先頭に付与する |
+| `capture-search-result.add-columnTitleRow` | boolean | `true` | 列タイトル行を先頭に付与する |
 
-## Excel Integration (Optional)
+## Excel 連携（オプション）
 
-コピーした検索結果を Excel へ `Ctrl+Shift+V` 1つで貼り付け・列分割まで行う AutoHotKey スクリプトを同梱しています。
+コピーした検索結果を Excel へ `Ctrl+Alt+V` 1つで貼り付け・列分割まで行う AutoHotKey スクリプトを同梱しています。
 
 詳細はリポジトリルートの [README](https://github.com/in0ho1no/CaptureSearchResult/blob/main/README.md) を参照してください。
 
-## Requirements
+## 動作要件
 
 - Visual Studio Code `^1.110.0`
