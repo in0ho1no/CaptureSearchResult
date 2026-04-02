@@ -1,7 +1,7 @@
 ﻿#Requires AutoHotkey v2.0
 
 #HotIf WinActive("ahk_class XLMAIN")
-^+v::
+^!v::
 {
     try {
         ; クリップボードが空の場合終了
