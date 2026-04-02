@@ -2,6 +2,10 @@
 
 All notable changes to the "capture-search-result" extension will be documented in this file.
 
+## [0.0.5]
+
+Implementation and environment improvements for the official release.
+
 ## [0.0.4]
 
 - Include column title row in output.  

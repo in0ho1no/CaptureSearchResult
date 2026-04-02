@@ -1,5 +1,5 @@
 
-[The extension's README is here](/capture-search-result/README.md)
+拡張機能本体のREADMEは[こちら](/capture-search-result/README.md)
 
 ## Repository Structure
 
@@ -24,15 +24,15 @@ CaptureSearchResult/
 Excel がアクティブな状態で `Ctrl+Shift+V` を押すと：
 
 1. クリップボードが空の場合は何もしない
-2. クリップボードの内容を選択中のセルから順に書き込む
-3. 書き込んだ範囲に区切り文字 `♪` が含まれている場合、自動で「区切り位置」を実行して列分割する
-4. `♪` が含まれていない場合は書き込みのみ行う
+1. `♪` が含まれていない場合は何もしない
+1. クリップボードの内容を選択中のセルから順に書き込む
+1. 書き込んだ範囲に区切り文字 `♪` が含まれている場合、自動で「区切り位置」を実行して列分割する
 
 ### 使い方
 
 1. `AutoHotKey_Excel-COM_enhance_paste.ahk` をダブルクリックして起動する
-2. VSCode の Search Editor で `Ctrl+Alt+C` を押して検索結果をコピーする
-3. Excel の貼り付け先の先頭セルを選択し、`Ctrl+Shift+V` で貼り付ける
+1. VSCode の Search Editor で `Ctrl+Alt+C` を押して検索結果をコピーする
+1. Excel の貼り付け先の先頭セルを選択し、`Ctrl+Alt+V` で貼り付ける
 
 ### 注意事項
 
