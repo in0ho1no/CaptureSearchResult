@@ -2,6 +2,12 @@
 
 本拡張機能に関するすべての主要な変更は、このファイルに記録されます。
 
+## [0.0.8]
+
+- 関連環境更新の影響確認を速やかに行うことができるようworkflowにCI環境を追加
+- tsconfig.json に skipLibCheck: true を追加。
+  eslint-scope と @typescript-eslint の型定義の不整合によるビルドエラーを修正。
+
 ## [0.0.7]
 
 ドキュメントの更新。
