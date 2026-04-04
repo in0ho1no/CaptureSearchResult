@@ -12,6 +12,7 @@ VSCode の検索結果を、ショートカットキー1つで構造化された
 - 出力内容：連番・ファイルパス・行番号・マッチしたテキスト
 - 区切り文字をカスタマイズ可能（デフォルト：`♪`）
 - 列タイトル行と検索サマリの先頭付与を設定で切り替え可能
+- 検索サマリは日本語・英語の VSCode 表示言語に対応
 
 > ショートカットは Search Editor 内でのみ有効です。
 
@@ -45,7 +46,7 @@ No.♪ファイル名♪行数♪検索結果
 
 ## Excel 連携（オプション）
 
-コピーした検索結果を Excel へ `Ctrl+Alt+V` 1つで貼り付け・列分割まで行う AutoHotKey スクリプトを同梱しています。
+コピーした検索結果を Excel へ `Ctrl+Alt+V` 1つで貼り付け・列分割まで行う AutoHotKey スクリプトをGithub上で公開しています。
 
 詳細はリポジトリルートの [README](https://github.com/in0ho1no/CaptureSearchResult/blob/main/README.md) を参照してください。
 
