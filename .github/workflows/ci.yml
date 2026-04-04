@@ -1,0 +1,40 @@
+name: Build Check
+
+on:
+  pull_request:
+    branches:
+      - develop
+      - main
+  push:
+    branches:
+      - develop
+      - main
+
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'npm'
+          cache-dependency-path: capture-search-result/package-lock.json
+
+      - name: Install dependencies
+        working-directory: capture-search-result
+        run: npm ci
+
+      - name: Compile TypeScript
+        working-directory: capture-search-result
+        run: npm run compile
+
+      - name: Package extension
+        working-directory: capture-search-result
+        run: npx @vscode/vsce package --no-yarn
