@@ -12,4 +12,4 @@ if [ "$answer" == "n" ]; then
 fi
 
 # パッケージングする
-npx vsce package
+npx @vscode/vsce package
