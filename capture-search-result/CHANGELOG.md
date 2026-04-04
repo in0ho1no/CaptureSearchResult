@@ -1,36 +1,42 @@
 # Change Log
 
-All notable changes to the "capture-search-result" extension will be documented in this file.
+本拡張機能に関するすべての主要な変更は、このファイルに記録されます。
+
+## [0.0.8]
+
+- 関連環境更新の影響確認を速やかに行うことができるようworkflowにCI環境を追加
+- tsconfig.json に skipLibCheck: true を追加。
+  eslint-scope と @typescript-eslint の型定義の不整合によるビルドエラーを修正。
 
 ## [0.0.7]
 
-Update document
+ドキュメントの更新。
 
 ## [0.0.6]
 
-Fixed an error behavior in AutoHotKey scripts.
+AutoHotKey スクリプトにおけるエラー挙動を修正。
 
 ## [0.0.5]
 
-Implementation and environment improvements for the official release.
+正式リリースに向けた実装および環境の改善。
 
 ## [0.0.4]
 
-- Include column title row in output.  
-- Add two settings.  
+- 出力結果にカラム（列）の見出し行を含めるように変更。
+- 以下の 2 つの設定を追加。
 
-    1. Include search summary when copying search results. True: include / False: do not include
-    1. Include column title row when copying search results. True: include / False: do not include
+    1. 検索結果をコピーする際に検索サマリーを含めるかどうか (True: 含む / False: 含まない)
+    1. 検索結果をコピーする際にカラム見出し行を含めるかどうか (True: 含む / False: 含まない)
 
 ## [0.0.3]
 
-Include search result summary in output.  
+出力結果に検索結果のサマリーを含めるように変更。
 
 ## [0.0.2]
 
-The regular expressions used to process search results have been modified.  
-Exclude colons (:) from numbers in search results.  
+検索結果の処理に使用する正規表現を修正。
+検索結果の数値に含まれるコロン (:) を除外。
 
 ## [0.0.1]
 
-- Initial release
+初回リリース

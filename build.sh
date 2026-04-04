@@ -12,6 +12,7 @@ check() {
     fi
 }
 
+check "Did you run 'npm install' and commit the updated package-lock.json if dependencies changed?"
 check "Did you update the CHANGELOG?"
 check "Did you update the version in package.json?"
 check "Did you update the README if needed?"
