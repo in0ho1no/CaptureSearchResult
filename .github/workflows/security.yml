@@ -30,9 +30,6 @@ jobs:
 
   security:
     runs-on: ubuntu-latest
-    env:
-      # Limit lifecycle scripts only in the security job to reduce CI attack surface.
-      NPM_CONFIG_IGNORE_SCRIPTS: true
 
     steps:
       - uses: actions/checkout@v4
@@ -46,6 +43,9 @@ jobs:
 
       - name: Install dependencies
         working-directory: capture-search-result
+        env:
+          # Block lifecycle scripts during installation; add targeted npm rebuild only if a future dependency truly requires it.
+          NPM_CONFIG_IGNORE_SCRIPTS: true
         run: npm ci
 
       - name: Verify package signatures
