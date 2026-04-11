@@ -53,3 +53,9 @@ No.♪ファイル名♪行数♪検索結果
 ## 動作要件
 
 - Visual Studio Code `^1.110.0`
+
+## 開発時の依存関係インストール
+
+このリポジトリでは、依存関係インストール時の lifecycle script 実行リスクを下げるため、[.npmrc](.npmrc) で `ignore-scripts=true` を既定にしています。
+
+通常の開発ではそのままで問題ありません。将来、特定の依存関係だけ `postinstall` などが本当に必要になった場合は、対象を確認したうえで個別に `npm rebuild <package-name> --ignore-scripts=false` を実行してください。
