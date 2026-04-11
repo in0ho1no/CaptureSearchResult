@@ -54,5 +54,6 @@ jobs:
       - name: Check vulnerabilities (dev dependencies with allowlist)
         working-directory: capture-search-result
         run: |
+          trap 'rm -f audit.json' EXIT
           npm audit --json > audit.json || true
           node scripts/check-audit.mjs audit.json
