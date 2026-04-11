@@ -66,7 +66,7 @@
     "test": "vscode-test"
   },
   "devDependencies": {
-    "@types/vscode": "^1.110.0",
+    "@types/vscode": "^1.115.0",
     "@types/mocha": "^10.0.6",
     "@types/node": "25.x",
     "@typescript-eslint/eslint-plugin": "^8.58.1",
