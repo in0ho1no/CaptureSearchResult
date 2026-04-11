@@ -1,4 +1,4 @@
-name: Test
+name: Security Check
 
 on:
   push:
@@ -13,7 +13,7 @@ env:
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
 jobs:
-  test:
+  security:
     runs-on: ubuntu-latest
 
     steps:
@@ -30,19 +30,17 @@ jobs:
         working-directory: capture-search-result
         run: npm ci
 
-      - name: Install VSCode dependencies
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y \
-            libnspr4 \
-            libnss3 \
-            libatk1.0-0 \
-            libatk-bridge2.0-0 \
-            libgtk-3-0 \
-            libgbm1 \
-            libasound2t64 \
-            xvfb
-
-      - name: Run tests
+      - name: Verify package signatures
         working-directory: capture-search-result
-        run: xvfb-run --auto-servernum npm test
+        run: npm audit signatures
+
+      - name: Check vulnerabilities (production dependencies)
+        working-directory: capture-search-result
+        run: npm audit --omit=dev --audit-level=high
+
+      - name: Check vulnerabilities (dev dependencies with allowlist)
+        working-directory: capture-search-result
+        run: |
+          trap 'rm -f audit.json' EXIT
+          npm audit --json > audit.json || true
+          node scripts/check-audit.mjs audit.json
