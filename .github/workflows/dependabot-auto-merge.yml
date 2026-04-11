@@ -10,7 +10,7 @@ jobs:
   auto-merge:
     runs-on: ubuntu-latest
     # Dependabotが作成したPRの時のみ実行
-    if: github.actor == 'dependabot[bot]'
+    if: github.event.pull_request.user.login == 'dependabot[bot]'
     steps:
       # Dependabotのメタデータを取得（バージョンアップの種類を判別するため）
       - name: Dependabot metadata
