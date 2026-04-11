@@ -4,7 +4,7 @@
   "description": "This extension captures VSCode search result.",
   "version": "0.1.0",
   "engines": {
-    "vscode": "^1.110.0"
+    "vscode": "^1.115.0"
   },
   "categories": [
     "Other"
@@ -66,15 +66,15 @@
     "test": "vscode-test"
   },
   "devDependencies": {
-    "@types/vscode": "^1.110.0",
+    "@types/vscode": "^1.115.0",
     "@types/mocha": "^10.0.6",
-    "@types/node": "22.x",
-    "@typescript-eslint/eslint-plugin": "^8.57.2",
+    "@types/node": "25.x",
+    "@typescript-eslint/eslint-plugin": "^8.58.1",
     "@typescript-eslint/parser": "^8.57.2",
-    "eslint": "^10.1.0",
+    "eslint": "^10.2.0",
     "typescript": "^5.4.5",
     "ts-loader": "^9.5.7",
-    "webpack": "^5.91.0",
+    "webpack": "^5.106.0",
     "webpack-cli": "^5.1.4",
     "@vscode/test-cli": "^0.0.12",
     "@vscode/test-electron": "^2.4.0"

@@ -30,3 +30,4 @@ updates:
       day: "friday"
       time: "17:00"
       timezone: "Asia/Tokyo"
+    target-branch: "develop"
