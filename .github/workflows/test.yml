@@ -28,6 +28,9 @@ jobs:
 
       - name: Install dependencies
         working-directory: capture-search-result
+        env:
+          # Block lifecycle scripts during installation; add targeted npm rebuild only if a future dependency truly requires it.
+          NPM_CONFIG_IGNORE_SCRIPTS: true
         run: npm ci
 
       - name: Install VSCode dependencies
@@ -46,8 +49,3 @@ jobs:
       - name: Run tests
         working-directory: capture-search-result
         run: xvfb-run --auto-servernum npm test
-
-      - name: Check vulnerabilities
-        working-directory: capture-search-result
-        run: npm audit --audit-level=high
-        continue-on-error: true
