@@ -47,7 +47,12 @@ jobs:
         working-directory: capture-search-result
         run: xvfb-run --auto-servernum npm test
 
-      - name: Check vulnerabilities
+      - name: Check vulnerabilities (production dependencies)
         working-directory: capture-search-result
-        run: npm audit --audit-level=high
-        continue-on-error: true
+        run: npm audit --omit=dev --audit-level=high
+
+      - name: Check vulnerabilities (dev dependencies with allowlist)
+        working-directory: capture-search-result
+        run: |
+          npm audit --json > audit.json || true
+          node scripts/check-audit.mjs audit.json
