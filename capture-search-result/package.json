@@ -4,7 +4,7 @@
   "description": "This extension captures VSCode search result.",
   "version": "0.1.0",
   "engines": {
-    "vscode": "^1.110.0"
+    "vscode": "^1.115.0"
   },
   "categories": [
     "Other"
