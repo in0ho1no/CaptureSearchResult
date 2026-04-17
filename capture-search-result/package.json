@@ -70,7 +70,7 @@
     "@types/mocha": "^10.0.6",
     "@types/node": "25.x",
     "@typescript-eslint/eslint-plugin": "^8.58.1",
-    "@typescript-eslint/parser": "^8.57.2",
+    "@typescript-eslint/parser": "^8.58.2",
     "eslint": "^10.2.0",
     "typescript": "^5.4.5",
     "ts-loader": "^9.5.7",
