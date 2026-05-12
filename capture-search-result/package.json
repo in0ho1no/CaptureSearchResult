@@ -2,7 +2,7 @@
   "name": "capture-search-result",
   "displayName": "Capture Search Result",
   "description": "This extension captures VSCode search result.",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "engines": {
     "node": ">=20.0.0",
     "vscode": "^1.118.0"
