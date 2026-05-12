@@ -4,6 +4,7 @@
   "description": "This extension captures VSCode search result.",
   "version": "0.1.0",
   "engines": {
+    "node": ">=20.0.0",
     "vscode": "^1.118.0"
   },
   "categories": [
@@ -78,5 +79,8 @@
     "webpack-cli": "^5.1.4",
     "@vscode/test-cli": "^0.0.12",
     "@vscode/test-electron": "^2.4.0"
+  },
+  "overrides": {
+    "serialize-javascript": "~7.0.3"
   }
 }
