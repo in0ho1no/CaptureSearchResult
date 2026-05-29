@@ -1,4 +1,5 @@
 import * as assert from 'assert';
+import * as vscode from 'vscode';
 import { processSearchResultsLineByLine, getSummaries, processSearchResults } from '../extension';
 
 const SEP = '♪';
@@ -242,5 +243,51 @@ suite('processSearchResults（統合テスト、デフォルト設定を使用�
 		// 検索結果行に区切り文字が含まれる
 		const resultRow = result.find((r: string) => r.startsWith('1' + customSep));
 		assert.ok(resultRow !== undefined);
+	});
+});
+
+suite('processSearchResults（設定変更テスト）', () => {
+
+	const config = vscode.workspace.getConfiguration('capture-search-result');
+	const simpleInput = [
+		'5 件の結果 - 1 ファイル',
+		'',
+		'/path/to/file.ts',
+		'  10:    first match',
+	].join('\n');
+
+	test('copy-summary=false のとき、先頭行がサマリ行でない', async () => {
+		await config.update('copy-summary', false, vscode.ConfigurationTarget.Global);
+		try {
+			const result = processSearchResults(simpleInput, SEP);
+			assert.ok(result.length > 0);
+			assert.ok(!/^\d+ .+ - \d+ .+$/.test(result[0]));
+		} finally {
+			await config.update('copy-summary', undefined, vscode.ConfigurationTarget.Global);
+		}
+	});
+
+	test('add-columnTitleRow=false のとき、タイトル行が含まれない', async () => {
+		await config.update('add-columnTitleRow', false, vscode.ConfigurationTarget.Global);
+		try {
+			const result = processSearchResults(simpleInput, SEP);
+			const titleRow = `No.${SEP}ファイル名${SEP}行数${SEP}検索結果`;
+			assert.ok(!result.includes(titleRow));
+		} finally {
+			await config.update('add-columnTitleRow', undefined, vscode.ConfigurationTarget.Global);
+		}
+	});
+
+	test('copy-summary=false・add-columnTitleRow=false のとき、検索結果行のみ返す', async () => {
+		await config.update('copy-summary', false, vscode.ConfigurationTarget.Global);
+		await config.update('add-columnTitleRow', false, vscode.ConfigurationTarget.Global);
+		try {
+			const result = processSearchResults(simpleInput, SEP);
+			assert.strictEqual(result.length, 1);
+			assert.ok(result[0].startsWith(`1${SEP}`));
+		} finally {
+			await config.update('copy-summary', undefined, vscode.ConfigurationTarget.Global);
+			await config.update('add-columnTitleRow', undefined, vscode.ConfigurationTarget.Global);
+		}
 	});
 });
