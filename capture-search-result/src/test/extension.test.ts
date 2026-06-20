@@ -183,6 +183,10 @@ suite('getSummaries', () => {
 	test('検索結果行はサマリと誤認識されない', () => {
 		assert.deepStrictEqual(getSummaries(['  10:    5 results - 2 files']), []);
 	});
+
+	test('単位語が一致しない行はサマリと誤認識されない', () => {
+		assert.deepStrictEqual(getSummaries(['12 apples - 3 oranges']), []);
+	});
 });
 
 suite('processSearchResults（統合テスト、デフォルト設定を使用）', () => {

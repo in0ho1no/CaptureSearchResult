@@ -171,6 +171,9 @@ function addSummary(searchResults: Array<string>, targetLines: Array<string>): A
  * @returns {Array<string>} - 取得したサマリ.
  */
 export function getSummaries(searchResults: Array<string>): Array<string> {
-	const regex = /^\d[\d,]* .+ - \d[\d,]* .+$/;
+	// 「<件数> <件数の単位> - <ファイル数> <ファイル数の単位>」形式のみをサマリとみなす。
+	// 単位語にアンカーすることで「12 apples - 3 oranges」のような行の誤検出を防ぐ。
+	// 単位は対応ロケール（日本語・英語）に限定する。
+	const regex = /^\d[\d,]* (?:results?|件の結果) - \d[\d,]* (?:files?|ファイル)$/;
 	return searchResults.filter(str => regex.test(str));
 }
