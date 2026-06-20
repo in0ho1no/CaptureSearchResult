@@ -318,7 +318,8 @@ suite('processSearchResults（設定変更テスト）', () => {
 		try {
 			const result = processSearchResults(simpleInput, SEP);
 			assert.ok(result.length > 0);
-			assert.ok(!/^\d+ .+ - \d+ .+$/.test(result[0]));
+			// copy-summary=false なので先頭行はサマリではなくタイトル行になる
+			assert.strictEqual(result[0], `No.${SEP}ファイル名${SEP}行数${SEP}検索結果`);
 		} finally {
 			await config.update('copy-summary', undefined, vscode.ConfigurationTarget.Global);
 		}
