@@ -26,6 +26,6 @@ npm run lint
 
 # --- パッケージング ---
 echo "Packaging extension..."
-npx @vscode/vsce package
+npm run vsix
 
 echo "Done."
