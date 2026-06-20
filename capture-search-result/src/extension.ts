@@ -52,7 +52,9 @@ function getSeparateChar(): string {
  * @returns 加工された文字列
  */
 export function processSearchResults(searchResults: string, separateChar: string): Array<string> {
-	const lines = searchResults.split('\n');
+	// CRLF/LF どちらの改行でも行末に \r を残さないよう、改行コードを正規化して分割する。
+	// これにより以降の行解析（ファイル名・結果行・サマリ判定）が \r の影響を受けない。
+	const lines = searchResults.split(/\r?\n/);
 	let processedLines:Array<string> = [];
 
 	// 検索結果を1行ずつに加工する
@@ -93,10 +95,7 @@ export function processSearchResultsLineByLine(searchResults: Array<string>, sep
 				currentFileName = line.trim().replace(':', '');
 			} else {
 				// 検索結果とみなす
-				// 末尾の \r? は CRLF 改行のドキュメントを split('\n') した際に
-				// 残る復帰文字を許容するため。これが無いと . が \r にマッチせず
-				// 検索結果行が1件もマッチしなくなる。
-				const match = line.match(/^\s*(\d+):\s*(.*)\r?$/);
+				const match = line.match(/^\s*(\d+):\s*(.*)$/);
 				if (match) {
 					findCount = findCount + 1;
 					const row_no = match[1];
