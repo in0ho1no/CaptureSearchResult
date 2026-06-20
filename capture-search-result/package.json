@@ -34,25 +34,25 @@
       }
     ],
     "configuration": {
-        "type": "object",
-        "title": "Capture Search Result Configuration",
-        "properties": {
-            "capture-search-result.separator": {
-                "type": "string",
-                "default": "♪",
-                "description": "Separator character used for processing search results"
-            },
-            "capture-search-result.copy-summary": {
-                "type": "boolean",
-                "default": true,
-                "description": "Include search summary when copying search results. True: include / False: do not include"
-            },
-            "capture-search-result.add-columnTitleRow": {
-                "type": "boolean",
-                "default": true,
-                "description": "Include column title row when copying search results. True: include / False: do not include"
-            }
+      "type": "object",
+      "title": "Capture Search Result Configuration",
+      "properties": {
+        "capture-search-result.separator": {
+          "type": "string",
+          "default": "♪",
+          "description": "Separator character used for processing search results"
+        },
+        "capture-search-result.copy-summary": {
+          "type": "boolean",
+          "default": true,
+          "description": "Include search summary when copying search results. True: include / False: do not include"
+        },
+        "capture-search-result.add-columnTitleRow": {
+          "type": "boolean",
+          "default": true,
+          "description": "Include column title row when copying search results. True: include / False: do not include"
         }
+      }
     }
   },
   "scripts": {
@@ -67,18 +67,19 @@
     "test": "vscode-test"
   },
   "devDependencies": {
-    "@types/vscode": "^1.118.0",
     "@types/mocha": "^10.0.6",
     "@types/node": "26.x",
+    "@types/vscode": "^1.118.0",
     "@typescript-eslint/eslint-plugin": "^8.61.1",
     "@typescript-eslint/parser": "^8.61.1",
-    "eslint": "^10.5.0",
-    "typescript": "^6.0.3",
-    "ts-loader": "^9.6.1",
-    "webpack": "^5.107.2",
-    "webpack-cli": "^7.0.3",
     "@vscode/test-cli": "^0.0.12",
-    "@vscode/test-electron": "^2.4.0"
+    "@vscode/test-electron": "^2.4.0",
+    "@vscode/vsce": "^3.9.2",
+    "eslint": "^10.5.0",
+    "ts-loader": "^9.6.1",
+    "typescript": "^6.0.3",
+    "webpack": "^5.107.2",
+    "webpack-cli": "^7.0.3"
   },
   "overrides": {
     "serialize-javascript": "~7.0.3"
