@@ -154,6 +154,17 @@ suite('getSummaries', () => {
 		);
 	});
 
+	test('桁区切り（カンマ）付きの件数も認識する', () => {
+		assert.deepStrictEqual(
+			getSummaries(['1,234 results - 56 files']),
+			['1,234 results - 56 files']
+		);
+		assert.deepStrictEqual(
+			getSummaries(['1,234 件の結果 - 56 ファイル']),
+			['1,234 件の結果 - 56 ファイル']
+		);
+	});
+
 	test('複数のサマリ行が存在する場合は全て返す', () => {
 		const input = [
 			'5 件の結果 - 2 ファイル',

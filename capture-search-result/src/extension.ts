@@ -171,6 +171,6 @@ function addSummary(searchResults: Array<string>, targetLines: Array<string>): A
  * @returns {Array<string>} - 取得したサマリ.
  */
 export function getSummaries(searchResults: Array<string>): Array<string> {
-	const regex = /^\d+ .+ - \d+ .+$/;
+	const regex = /^\d[\d,]* .+ - \d[\d,]* .+$/;
 	return searchResults.filter(str => regex.test(str));
 }
