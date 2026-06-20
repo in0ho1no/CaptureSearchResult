@@ -104,6 +104,31 @@ suite('processSearchResultsLineByLine', () => {
 		assert.strictEqual(result.length, 1);
 		assert.ok(result[0].endsWith(`${SEP}10${SEP}`));
 	});
+
+	test('コロン直後の先頭空白は除去され末尾空白は保持される', () => {
+		const input = [
+			'/file.ts',
+			'  10:  \t  leading trimmed  ',
+		];
+		const result = processSearchResultsLineByLine(input, SEP);
+		assert.strictEqual(result.length, 1);
+		// 先頭の空白は除去、末尾の空白は保持
+		assert.ok(result[0].endsWith(`${SEP}leading trimmed  `));
+	});
+
+	test('コロン後に大量の空白があっても高速に処理される(ReDoS回帰防止)', () => {
+		const input = [
+			'/file.ts',
+			'  9:' + ' '.repeat(100000),
+		];
+		const start = Date.now();
+		const result = processSearchResultsLineByLine(input, SEP);
+		const elapsed = Date.now() - start;
+		assert.strictEqual(result.length, 1);
+		assert.ok(result[0].endsWith(`${SEP}9${SEP}`));
+		// 多項式バックトラックが無いことの確認(十分余裕のある閾値)
+		assert.ok(elapsed < 1000, `処理が遅すぎます: ${elapsed}ms`);
+	});
 });
 
 suite('getSummary', () => {

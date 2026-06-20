@@ -95,11 +95,14 @@ export function processSearchResultsLineByLine(searchResults: Array<string>, sep
 				currentFileName = line.trim().replace(':', '');
 			} else {
 				// 検索結果とみなす
-				const match = line.match(/^\s*(\d+):\s*(.*)$/);
+				// コロン後の先頭空白は trimStart() で除去する。
+				// 正規表現側で \s*(.*) と書くと「空白にマッチする量指定子の隣接」となり
+				// 多項式バックトラック(ReDoS)としてCodeQLに検出されるため、ここでは行わない。
+				const match = line.match(/^\s*(\d+):(.*)$/);
 				if (match) {
 					findCount = findCount + 1;
 					const row_no = match[1];
-					const search_res = match[2];
+					const search_res = match[2].trimStart();
 					const findResult = [
 						findCount,
 						currentFileName,
