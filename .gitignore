@@ -2,3 +2,5 @@ dist
 out
 node_modules
 *.vsix
+*.bak
+.vscode-test/

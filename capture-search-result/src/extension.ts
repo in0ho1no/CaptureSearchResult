@@ -52,7 +52,9 @@ function getSeparateChar(): string {
  * @returns 加工された文字列
  */
 export function processSearchResults(searchResults: string, separateChar: string): Array<string> {
-	const lines = searchResults.split('\n');
+	// CRLF/LF どちらの改行でも行末に \r を残さないよう、改行コードを正規化して分割する。
+	// これにより以降の行解析（ファイル名・結果行・サマリ判定）が \r の影響を受けない。
+	const lines = searchResults.split(/\r?\n/);
 	let processedLines:Array<string> = [];
 
 	// 検索結果を1行ずつに加工する
@@ -93,11 +95,14 @@ export function processSearchResultsLineByLine(searchResults: Array<string>, sep
 				currentFileName = line.trim().replace(':', '');
 			} else {
 				// 検索結果とみなす
-				const match = line.match(/^\s*(\d+):\s*(.*)$/);
+				// コロン後の先頭空白は trimStart() で除去する。
+				// 正規表現側で \s*(.*) と書くと「空白にマッチする量指定子の隣接」となり
+				// 多項式バックトラック(ReDoS)としてCodeQLに検出されるため、ここでは行わない。
+				const match = line.match(/^\s*(\d+):(.*)$/);
 				if (match) {
 					findCount = findCount + 1;
 					const row_no = match[1];
-					const search_res = match[2];
+					const search_res = match[2].trimStart();
 					const findResult = [
 						findCount,
 						currentFileName,
@@ -153,10 +158,10 @@ function addColumnTitleRow(targetLines: Array<string>, separateChar: string): Ar
 function addSummary(searchResults: Array<string>, targetLines: Array<string>): Array<string> {
 	const copySummary = vscode.workspace.getConfiguration().get<boolean>("capture-search-result.copy-summary", true);
 	if (copySummary) {
-		const summaries = getSummaries(searchResults);
-		if (summaries.length >= 1) {
+		const summary = getSummary(searchResults);
+		if (summary !== undefined) {
 			return [
-				summaries[0],
+				summary,
 				...targetLines
 			];
 		}
@@ -165,12 +170,16 @@ function addSummary(searchResults: Array<string>, targetLines: Array<string>): A
 }
 
 /**
- * 検索結果の文字列配列からサマリを取得する。
- * 
+ * 検索結果の文字列配列からサマリ行を取得する。
+ * サマリは1行のみのため、最初に見つかった行を返す。
+ *
  * @param {Array<string>} searchResults - 検索結果の文字列配列.
- * @returns {Array<string>} - 取得したサマリ.
+ * @returns {string | undefined} - 取得したサマリ行。見つからない場合はundefined.
  */
-export function getSummaries(searchResults: Array<string>): Array<string> {
-	const regex = /^\d+ .+ - \d+ .+$/;
-	return searchResults.filter(str => regex.test(str));
+export function getSummary(searchResults: Array<string>): string | undefined {
+	// 「<件数> <件数の単位> - <ファイル数> <ファイル数の単位>」形式のみをサマリとみなす。
+	// 単位語にアンカーすることで「12 apples - 3 oranges」のような行の誤検出を防ぐ。
+	// 単位は対応ロケール（日本語・英語）に限定する。
+	const regex = /^\d[\d,]* (?:results?|件の結果) - \d[\d,]* (?:files?|ファイル)$/;
+	return searchResults.find(str => regex.test(str));
 }

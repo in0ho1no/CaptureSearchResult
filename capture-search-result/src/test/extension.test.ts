@@ -1,5 +1,6 @@
 import * as assert from 'assert';
-import { processSearchResultsLineByLine, getSummaries, processSearchResults } from '../extension';
+import * as vscode from 'vscode';
+import { processSearchResultsLineByLine, getSummary, processSearchResults } from '../extension';
 
 const SEP = '♪';
 
@@ -103,14 +104,39 @@ suite('processSearchResultsLineByLine', () => {
 		assert.strictEqual(result.length, 1);
 		assert.ok(result[0].endsWith(`${SEP}10${SEP}`));
 	});
+
+	test('コロン直後の先頭空白は除去され末尾空白は保持される', () => {
+		const input = [
+			'/file.ts',
+			'  10:  \t  leading trimmed  ',
+		];
+		const result = processSearchResultsLineByLine(input, SEP);
+		assert.strictEqual(result.length, 1);
+		// 先頭の空白は除去、末尾の空白は保持
+		assert.ok(result[0].endsWith(`${SEP}leading trimmed  `));
+	});
+
+	test('コロン後に大量の空白があっても高速に処理される(ReDoS回帰防止)', () => {
+		const input = [
+			'/file.ts',
+			'  9:' + ' '.repeat(100000),
+		];
+		const start = Date.now();
+		const result = processSearchResultsLineByLine(input, SEP);
+		const elapsed = Date.now() - start;
+		assert.strictEqual(result.length, 1);
+		assert.ok(result[0].endsWith(`${SEP}9${SEP}`));
+		// 多項式バックトラックが無いことの確認(十分余裕のある閾値)
+		assert.ok(elapsed < 1000, `処理が遅すぎます: ${elapsed}ms`);
+	});
 });
 
-suite('getSummaries', () => {
+suite('getSummary', () => {
 
 	test('正しい形式のサマリ行を返す', () => {
-		assert.deepStrictEqual(
-			getSummaries(['5 件の結果 - 2 ファイル']),
-			['5 件の結果 - 2 ファイル']
+		assert.strictEqual(
+			getSummary(['5 件の結果 - 2 ファイル']),
+			'5 件の結果 - 2 ファイル'
 		);
 	});
 
@@ -120,56 +146,68 @@ suite('getSummaries', () => {
 			'/path/to/file.ts',
 			'  10:    match',
 		];
-		assert.deepStrictEqual(getSummaries(input), ['5 件の結果 - 2 ファイル']);
+		assert.strictEqual(getSummary(input), '5 件の結果 - 2 ファイル');
 	});
 
-	test('空の配列は空配列を返す', () => {
-		assert.deepStrictEqual(getSummaries([]), []);
+	test('空の配列はundefinedを返す', () => {
+		assert.strictEqual(getSummary([]), undefined);
 	});
 
-	test('サマリがない場合は空配列を返す', () => {
+	test('サマリがない場合はundefinedを返す', () => {
 		const input = ['/path/to/file.ts', '  10:    match'];
-		assert.deepStrictEqual(getSummaries(input), []);
+		assert.strictEqual(getSummary(input), undefined);
 	});
 
 	test('0件・0ファイルのサマリも認識する', () => {
-		assert.deepStrictEqual(
-			getSummaries(['0 件の結果 - 0 ファイル']),
-			['0 件の結果 - 0 ファイル']
+		assert.strictEqual(
+			getSummary(['0 件の結果 - 0 ファイル']),
+			'0 件の結果 - 0 ファイル'
 		);
 	});
 
 	test('英語形式のサマリ行を認識する', () => {
-		assert.deepStrictEqual(
-			getSummaries(['5 results - 2 files']),
-			['5 results - 2 files']
+		assert.strictEqual(
+			getSummary(['5 results - 2 files']),
+			'5 results - 2 files'
 		);
 	});
 
 	test('英語形式（単数）のサマリ行を認識する', () => {
-		assert.deepStrictEqual(
-			getSummaries(['1 result - 1 file']),
-			['1 result - 1 file']
+		assert.strictEqual(
+			getSummary(['1 result - 1 file']),
+			'1 result - 1 file'
 		);
 	});
 
-	test('複数のサマリ行が存在する場合は全て返す', () => {
+	test('桁区切り（カンマ）付きの件数も認識する', () => {
+		assert.strictEqual(
+			getSummary(['1,234 results - 56 files']),
+			'1,234 results - 56 files'
+		);
+		assert.strictEqual(
+			getSummary(['1,234 件の結果 - 56 ファイル']),
+			'1,234 件の結果 - 56 ファイル'
+		);
+	});
+
+	test('複数のサマリ行が存在する場合は最初の行を返す', () => {
 		const input = [
 			'5 件の結果 - 2 ファイル',
 			'3 results - 1 file',
 		];
-		assert.deepStrictEqual(getSummaries(input), [
-			'5 件の結果 - 2 ファイル',
-			'3 results - 1 file',
-		]);
+		assert.strictEqual(getSummary(input), '5 件の結果 - 2 ファイル');
 	});
 
 	test('ファイルパスはサマリと誤認識されない', () => {
-		assert.deepStrictEqual(getSummaries(['/path/to/file.ts']), []);
+		assert.strictEqual(getSummary(['/path/to/file.ts']), undefined);
 	});
 
 	test('検索結果行はサマリと誤認識されない', () => {
-		assert.deepStrictEqual(getSummaries(['  10:    5 results - 2 files']), []);
+		assert.strictEqual(getSummary(['  10:    5 results - 2 files']), undefined);
+	});
+
+	test('単位語が一致しない行はサマリと誤認識されない', () => {
+		assert.strictEqual(getSummary(['12 apples - 3 oranges']), undefined);
 	});
 });
 
@@ -242,5 +280,72 @@ suite('processSearchResults（統合テスト、デフォルト設定を使用�
 		// 検索結果行に区切り文字が含まれる
 		const resultRow = result.find((r: string) => r.startsWith('1' + customSep));
 		assert.ok(resultRow !== undefined);
+	});
+
+	test('CRLF改行のドキュメントでもサマリ・検索結果が正しく処理される', () => {
+		// 改行コードを CRLF にしても LF と同じ結果になること（split での正規化を検証）
+		const crlfInput = [
+			'5 results - 2 files',
+			'',
+			'/path/to/file1.ts',
+			'  10:    first match',
+			'  25:    second match',
+			'',
+			'/path/to/file2.ts',
+			'  5:    third match',
+		].join('\r\n');
+		const result = processSearchResults(crlfInput, SEP);
+		assert.strictEqual(result.length, 5);
+		// サマリ・検索結果に \r が混入していないこと
+		assert.strictEqual(result[0], '5 results - 2 files');
+		assert.strictEqual(result[2], `1${SEP}/path/to/file1.ts${SEP}10${SEP}first match`);
+		assert.strictEqual(result[4], `3${SEP}/path/to/file2.ts${SEP}5${SEP}third match`);
+	});
+});
+
+suite('processSearchResults（設定変更テスト）', () => {
+
+	const config = vscode.workspace.getConfiguration('capture-search-result');
+	const simpleInput = [
+		'5 件の結果 - 1 ファイル',
+		'',
+		'/path/to/file.ts',
+		'  10:    first match',
+	].join('\n');
+
+	test('copy-summary=false のとき、先頭行がサマリ行でない', async () => {
+		await config.update('copy-summary', false, vscode.ConfigurationTarget.Global);
+		try {
+			const result = processSearchResults(simpleInput, SEP);
+			assert.ok(result.length > 0);
+			// copy-summary=false なので先頭行はサマリではなくタイトル行になる
+			assert.strictEqual(result[0], `No.${SEP}ファイル名${SEP}行数${SEP}検索結果`);
+		} finally {
+			await config.update('copy-summary', undefined, vscode.ConfigurationTarget.Global);
+		}
+	});
+
+	test('add-columnTitleRow=false のとき、タイトル行が含まれない', async () => {
+		await config.update('add-columnTitleRow', false, vscode.ConfigurationTarget.Global);
+		try {
+			const result = processSearchResults(simpleInput, SEP);
+			const titleRow = `No.${SEP}ファイル名${SEP}行数${SEP}検索結果`;
+			assert.ok(!result.includes(titleRow));
+		} finally {
+			await config.update('add-columnTitleRow', undefined, vscode.ConfigurationTarget.Global);
+		}
+	});
+
+	test('copy-summary=false・add-columnTitleRow=false のとき、検索結果行のみ返す', async () => {
+		await config.update('copy-summary', false, vscode.ConfigurationTarget.Global);
+		await config.update('add-columnTitleRow', false, vscode.ConfigurationTarget.Global);
+		try {
+			const result = processSearchResults(simpleInput, SEP);
+			assert.strictEqual(result.length, 1);
+			assert.ok(result[0].startsWith(`1${SEP}`));
+		} finally {
+			await config.update('copy-summary', undefined, vscode.ConfigurationTarget.Global);
+			await config.update('add-columnTitleRow', undefined, vscode.ConfigurationTarget.Global);
+		}
 	});
 });

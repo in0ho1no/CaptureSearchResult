@@ -50,10 +50,6 @@ No.♪ファイル名♪行数♪検索結果
 
 詳細はリポジトリルートの [README](https://github.com/in0ho1no/CaptureSearchResult/blob/main/README.md) を参照してください。
 
-## 動作要件
-
-- Visual Studio Code `^1.110.0`
-
 ## 開発時の依存関係インストール
 
 このリポジトリでは、依存関係インストール時の lifecycle script 実行リスクを下げるため、[.npmrc](.npmrc) で `ignore-scripts=true` を既定にしています。
