@@ -104,6 +104,18 @@ suite('processSearchResultsLineByLine', () => {
 		assert.strictEqual(result.length, 1);
 		assert.ok(result[0].endsWith(`${SEP}10${SEP}`));
 	});
+
+	test('CRLF改行で行末に\\rが残っても正しく加工される', () => {
+		// split('\n') 後に各行末へ残る \r を模擬する
+		const input = [
+			'/path/to/file.ts:\r',
+			'  10:    some code here\r',
+		];
+		const result = processSearchResultsLineByLine(input, SEP);
+		assert.strictEqual(result.length, 1);
+		// \r が検索結果内容に混入していないこと
+		assert.strictEqual(result[0], `1${SEP}/path/to/file.ts${SEP}10${SEP}some code here`);
+	});
 });
 
 suite('getSummary', () => {

@@ -93,7 +93,10 @@ export function processSearchResultsLineByLine(searchResults: Array<string>, sep
 				currentFileName = line.trim().replace(':', '');
 			} else {
 				// 検索結果とみなす
-				const match = line.match(/^\s*(\d+):\s*(.*)$/);
+				// 末尾の \r? は CRLF 改行のドキュメントを split('\n') した際に
+				// 残る復帰文字を許容するため。これが無いと . が \r にマッチせず
+				// 検索結果行が1件もマッチしなくなる。
+				const match = line.match(/^\s*(\d+):\s*(.*)\r?$/);
 				if (match) {
 					findCount = findCount + 1;
 					const row_no = match[1];
