@@ -50,19 +50,8 @@ No.♪ファイル名♪行数♪検索結果
 
 詳細はリポジトリルートの [README](https://github.com/in0ho1no/CaptureSearchResult/blob/main/README.md) を参照してください。
 
-## 動作要件
-
-- Visual Studio Code `^1.110.0`
-
 ## 開発時の依存関係インストール
 
 このリポジトリでは、依存関係インストール時の lifecycle script 実行リスクを下げるため、[.npmrc](.npmrc) で `ignore-scripts=true` を既定にしています。
 
 通常の開発ではそのままで問題ありません。将来、特定の依存関係だけ `postinstall` などが本当に必要になった場合は、対象を確認したうえで個別に `npm rebuild <package-name> --ignore-scripts=false` を実行してください。
-
-## 依存更新ポリシー
-
-- `@types/vscode` は毎回追随更新せず、`engines.vscode` と同じ世代にそろえる
-- 新しい VS Code API を使うときだけ、`engines.vscode` と `@types/vscode` を一緒に引き上げる
-- Dependabot の更新提案は、API 利用予定がない限り後回しまたはクローズでよい
-- 長期間の乖離を避けるため、定期メンテナンス時にまとめて見直す
