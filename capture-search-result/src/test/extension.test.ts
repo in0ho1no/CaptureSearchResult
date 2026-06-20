@@ -104,6 +104,31 @@ suite('processSearchResultsLineByLine', () => {
 		assert.strictEqual(result.length, 1);
 		assert.ok(result[0].endsWith(`${SEP}10${SEP}`));
 	});
+
+	test('コロン直後の先頭空白は除去され末尾空白は保持される', () => {
+		const input = [
+			'/file.ts',
+			'  10:  \t  leading trimmed  ',
+		];
+		const result = processSearchResultsLineByLine(input, SEP);
+		assert.strictEqual(result.length, 1);
+		// 先頭の空白は除去、末尾の空白は保持
+		assert.ok(result[0].endsWith(`${SEP}leading trimmed  `));
+	});
+
+	test('コロン後に大量の空白があっても高速に処理される(ReDoS回帰防止)', () => {
+		const input = [
+			'/file.ts',
+			'  9:' + ' '.repeat(100000),
+		];
+		const start = Date.now();
+		const result = processSearchResultsLineByLine(input, SEP);
+		const elapsed = Date.now() - start;
+		assert.strictEqual(result.length, 1);
+		assert.ok(result[0].endsWith(`${SEP}9${SEP}`));
+		// 多項式バックトラックが無いことの確認(十分余裕のある閾値)
+		assert.ok(elapsed < 1000, `処理が遅すぎます: ${elapsed}ms`);
+	});
 });
 
 suite('getSummary', () => {
@@ -255,6 +280,26 @@ suite('processSearchResults（統合テスト、デフォルト設定を使用�
 		// 検索結果行に区切り文字が含まれる
 		const resultRow = result.find((r: string) => r.startsWith('1' + customSep));
 		assert.ok(resultRow !== undefined);
+	});
+
+	test('CRLF改行のドキュメントでもサマリ・検索結果が正しく処理される', () => {
+		// 改行コードを CRLF にしても LF と同じ結果になること（split での正規化を検証）
+		const crlfInput = [
+			'5 results - 2 files',
+			'',
+			'/path/to/file1.ts',
+			'  10:    first match',
+			'  25:    second match',
+			'',
+			'/path/to/file2.ts',
+			'  5:    third match',
+		].join('\r\n');
+		const result = processSearchResults(crlfInput, SEP);
+		assert.strictEqual(result.length, 5);
+		// サマリ・検索結果に \r が混入していないこと
+		assert.strictEqual(result[0], '5 results - 2 files');
+		assert.strictEqual(result[2], `1${SEP}/path/to/file1.ts${SEP}10${SEP}first match`);
+		assert.strictEqual(result[4], `3${SEP}/path/to/file2.ts${SEP}5${SEP}third match`);
 	});
 });
 

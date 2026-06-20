@@ -52,7 +52,9 @@ function getSeparateChar(): string {
  * @returns 加工された文字列
  */
 export function processSearchResults(searchResults: string, separateChar: string): Array<string> {
-	const lines = searchResults.split('\n');
+	// CRLF/LF どちらの改行でも行末に \r を残さないよう、改行コードを正規化して分割する。
+	// これにより以降の行解析（ファイル名・結果行・サマリ判定）が \r の影響を受けない。
+	const lines = searchResults.split(/\r?\n/);
 	let processedLines:Array<string> = [];
 
 	// 検索結果を1行ずつに加工する
@@ -93,11 +95,14 @@ export function processSearchResultsLineByLine(searchResults: Array<string>, sep
 				currentFileName = line.trim().replace(':', '');
 			} else {
 				// 検索結果とみなす
-				const match = line.match(/^\s*(\d+):\s*(.*)$/);
+				// コロン後の先頭空白は trimStart() で除去する。
+				// 正規表現側で \s*(.*) と書くと「空白にマッチする量指定子の隣接」となり
+				// 多項式バックトラック(ReDoS)としてCodeQLに検出されるため、ここでは行わない。
+				const match = line.match(/^\s*(\d+):(.*)$/);
 				if (match) {
 					findCount = findCount + 1;
 					const row_no = match[1];
-					const search_res = match[2];
+					const search_res = match[2].trimStart();
 					const findResult = [
 						findCount,
 						currentFileName,
