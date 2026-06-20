@@ -1,6 +1,6 @@
 import * as assert from 'assert';
 import * as vscode from 'vscode';
-import { processSearchResultsLineByLine, getSummaries, processSearchResults } from '../extension';
+import { processSearchResultsLineByLine, getSummary, processSearchResults } from '../extension';
 
 const SEP = '♪';
 
@@ -106,12 +106,12 @@ suite('processSearchResultsLineByLine', () => {
 	});
 });
 
-suite('getSummaries', () => {
+suite('getSummary', () => {
 
 	test('正しい形式のサマリ行を返す', () => {
-		assert.deepStrictEqual(
-			getSummaries(['5 件の結果 - 2 ファイル']),
-			['5 件の結果 - 2 ファイル']
+		assert.strictEqual(
+			getSummary(['5 件の結果 - 2 ファイル']),
+			'5 件の結果 - 2 ファイル'
 		);
 	});
 
@@ -121,56 +121,68 @@ suite('getSummaries', () => {
 			'/path/to/file.ts',
 			'  10:    match',
 		];
-		assert.deepStrictEqual(getSummaries(input), ['5 件の結果 - 2 ファイル']);
+		assert.strictEqual(getSummary(input), '5 件の結果 - 2 ファイル');
 	});
 
-	test('空の配列は空配列を返す', () => {
-		assert.deepStrictEqual(getSummaries([]), []);
+	test('空の配列はundefinedを返す', () => {
+		assert.strictEqual(getSummary([]), undefined);
 	});
 
-	test('サマリがない場合は空配列を返す', () => {
+	test('サマリがない場合はundefinedを返す', () => {
 		const input = ['/path/to/file.ts', '  10:    match'];
-		assert.deepStrictEqual(getSummaries(input), []);
+		assert.strictEqual(getSummary(input), undefined);
 	});
 
 	test('0件・0ファイルのサマリも認識する', () => {
-		assert.deepStrictEqual(
-			getSummaries(['0 件の結果 - 0 ファイル']),
-			['0 件の結果 - 0 ファイル']
+		assert.strictEqual(
+			getSummary(['0 件の結果 - 0 ファイル']),
+			'0 件の結果 - 0 ファイル'
 		);
 	});
 
 	test('英語形式のサマリ行を認識する', () => {
-		assert.deepStrictEqual(
-			getSummaries(['5 results - 2 files']),
-			['5 results - 2 files']
+		assert.strictEqual(
+			getSummary(['5 results - 2 files']),
+			'5 results - 2 files'
 		);
 	});
 
 	test('英語形式（単数）のサマリ行を認識する', () => {
-		assert.deepStrictEqual(
-			getSummaries(['1 result - 1 file']),
-			['1 result - 1 file']
+		assert.strictEqual(
+			getSummary(['1 result - 1 file']),
+			'1 result - 1 file'
 		);
 	});
 
-	test('複数のサマリ行が存在する場合は全て返す', () => {
+	test('桁区切り（カンマ）付きの件数も認識する', () => {
+		assert.strictEqual(
+			getSummary(['1,234 results - 56 files']),
+			'1,234 results - 56 files'
+		);
+		assert.strictEqual(
+			getSummary(['1,234 件の結果 - 56 ファイル']),
+			'1,234 件の結果 - 56 ファイル'
+		);
+	});
+
+	test('複数のサマリ行が存在する場合は最初の行を返す', () => {
 		const input = [
 			'5 件の結果 - 2 ファイル',
 			'3 results - 1 file',
 		];
-		assert.deepStrictEqual(getSummaries(input), [
-			'5 件の結果 - 2 ファイル',
-			'3 results - 1 file',
-		]);
+		assert.strictEqual(getSummary(input), '5 件の結果 - 2 ファイル');
 	});
 
 	test('ファイルパスはサマリと誤認識されない', () => {
-		assert.deepStrictEqual(getSummaries(['/path/to/file.ts']), []);
+		assert.strictEqual(getSummary(['/path/to/file.ts']), undefined);
 	});
 
 	test('検索結果行はサマリと誤認識されない', () => {
-		assert.deepStrictEqual(getSummaries(['  10:    5 results - 2 files']), []);
+		assert.strictEqual(getSummary(['  10:    5 results - 2 files']), undefined);
+	});
+
+	test('単位語が一致しない行はサマリと誤認識されない', () => {
+		assert.strictEqual(getSummary(['12 apples - 3 oranges']), undefined);
 	});
 });
 

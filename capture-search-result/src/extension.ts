@@ -153,10 +153,10 @@ function addColumnTitleRow(targetLines: Array<string>, separateChar: string): Ar
 function addSummary(searchResults: Array<string>, targetLines: Array<string>): Array<string> {
 	const copySummary = vscode.workspace.getConfiguration().get<boolean>("capture-search-result.copy-summary", true);
 	if (copySummary) {
-		const summaries = getSummaries(searchResults);
-		if (summaries.length >= 1) {
+		const summary = getSummary(searchResults);
+		if (summary !== undefined) {
 			return [
-				summaries[0],
+				summary,
 				...targetLines
 			];
 		}
@@ -165,12 +165,16 @@ function addSummary(searchResults: Array<string>, targetLines: Array<string>): A
 }
 
 /**
- * 検索結果の文字列配列からサマリを取得する。
- * 
+ * 検索結果の文字列配列からサマリ行を取得する。
+ * サマリは1行のみのため、最初に見つかった行を返す。
+ *
  * @param {Array<string>} searchResults - 検索結果の文字列配列.
- * @returns {Array<string>} - 取得したサマリ.
+ * @returns {string | undefined} - 取得したサマリ行。見つからない場合はundefined.
  */
-export function getSummaries(searchResults: Array<string>): Array<string> {
-	const regex = /^\d+ .+ - \d+ .+$/;
-	return searchResults.filter(str => regex.test(str));
+export function getSummary(searchResults: Array<string>): string | undefined {
+	// 「<件数> <件数の単位> - <ファイル数> <ファイル数の単位>」形式のみをサマリとみなす。
+	// 単位語にアンカーすることで「12 apples - 3 oranges」のような行の誤検出を防ぐ。
+	// 単位は対応ロケール（日本語・英語）に限定する。
+	const regex = /^\d[\d,]* (?:results?|件の結果) - \d[\d,]* (?:files?|ファイル)$/;
+	return searchResults.find(str => regex.test(str));
 }
