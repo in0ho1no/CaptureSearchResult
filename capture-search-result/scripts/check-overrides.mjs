@@ -94,8 +94,13 @@ if (!baseline.resolvable) {
   console.error('Failed to resolve the dependency tree with the current overrides.');
   process.exit(1);
 }
+// 以降の判定は「override を外すと監査が落ちるか」で見るため、
+// 現状で既に落ちていると全エントリが無条件に KEEP になり、判定が意味を失う。
+// 誤った結果を出すより先に監査を通す必要があるので、ここで打ち切る。
 if (!baseline.auditPassed) {
-  console.warn('Warning: the audit already fails with the current overrides. Fix that first.');
+  console.error('The audit already fails with the current overrides, so overrides cannot be judged.');
+  console.error('Fix the audit first (resolve it, or add the advisory to scripts/check-audit.mjs), then re-run.');
+  process.exit(1);
 }
 
 const results = [];
