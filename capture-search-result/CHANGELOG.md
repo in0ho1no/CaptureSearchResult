@@ -2,6 +2,16 @@
 
 本拡張機能に関するすべての主要な変更は、このファイルに記録されます。
 
+## [0.1.3]
+
+拡張機能の動作に変更はありません。開発・ビルド環境の脆弱性対応が中心です。
+
+- 開発用依存の推移的依存に含まれる脆弱性へ対応。`serialize-javascript` / `minimatch` / `glob` を修正済みバージョンへ固定。
+- 開発用依存（eslint / webpack / webpack-cli / ts-loader / @typescript-eslint / @vscode/test-cli）を更新。
+- 固定した依存が不要になっていないかを定期的に確認するワークフロー（Overrides Review）を追加。
+- 依存更新の自動マージ対象を見直し、外部 Action とベースイメージの更新は人手で確認するよう変更。
+- README の Excel 連携のショートカットキー表記の誤りを修正（`Ctrl+Shift+V` → `Ctrl+Alt+V`）。
+
 ## [0.1.2]
 
 - 検索結果が多い場合の桁区切り（カンマ）付き件数のサマリ（例: `1,234 results - 56 files`）を認識するように修正。
