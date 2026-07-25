@@ -13,6 +13,11 @@ updates:
       day: "friday"
       time: "17:00"
       timezone: "Asia/Tokyo"
+    cooldown:
+      default-days: 7
+    open-pull-requests-limit: 10
+    assignees:
+      - "in0ho1no"
     labels:
       - "dependencies"
     commit-message:
@@ -27,6 +32,8 @@ updates:
       day: "friday"
       time: "17:00"
       timezone: "Asia/Tokyo"
+    cooldown:
+      default-days: 7
     open-pull-requests-limit: 10
     assignees:
       - "in0ho1no"
@@ -37,6 +44,24 @@ updates:
       include: "scope"
     target-branch: "develop"
 
+  - package-ecosystem: "docker"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "friday"
+      time: "17:00"
+      timezone: "Asia/Tokyo"
+    cooldown:
+      default-days: 7
+    assignees:
+      - "in0ho1no"
+    labels:
+      - "dependencies"
+    commit-message:
+      prefix: "docker"
+      include: "scope"
+    target-branch: "develop"
+
   - package-ecosystem: "devcontainers"
     directory: "/"
     schedule:
@@ -44,4 +69,10 @@ updates:
       day: "friday"
       time: "17:00"
       timezone: "Asia/Tokyo"
+    cooldown:
+      default-days: 7
+    assignees:
+      - "in0ho1no"
+    labels:
+      - "dependencies"
     target-branch: "develop"
