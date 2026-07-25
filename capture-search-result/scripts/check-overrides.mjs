@@ -14,6 +14,9 @@ import { fileURLToPath } from 'node:url';
 const scriptDir = path.dirname(fileURLToPath(import.meta.url));
 const projectDir = path.resolve(scriptDir, '..');
 
+// 既定は情報提供のみ。CI の定期実行では削除できる override が残っていたら失敗させる。
+const failOnRemovable = process.argv.includes('--fail-on-removable');
+
 const pkg = JSON.parse(fs.readFileSync(path.join(projectDir, 'package.json'), 'utf8'));
 const overrides = pkg.overrides || {};
 const names = Object.keys(overrides);
@@ -133,45 +136,78 @@ for (const item of results) {
 
 const removable = results.filter((item) => item.verdict === 'REMOVE');
 const review = results.filter((item) => item.verdict === 'REVIEW');
+const keep = results.filter((item) => item.verdict === 'KEEP');
 
 console.log('');
-console.log(`Summary: ${results.length - removable.length - review.length} keep / ${review.length} review / ${removable.length} remove`);
+console.log(`Summary: ${keep.length} keep / ${review.length} review / ${removable.length} remove`);
 
-if (removable.length > 0) {
+// 1 件ずつの判定は「他の override があるおかげで不要」なケースを見落とすため、
+// REMOVE 候補が複数あるときはまとめて外した状態でもう一度確認する。
+let deletable = removable;
+if (removable.length > 1) {
   console.log('');
+  console.log('Verifying the removal candidates all at once...');
+  const withoutAll = { ...overrides };
+  for (const item of removable) delete withoutAll[item.name];
+  const combined = evaluate(withoutAll);
 
-  // 1 件ずつの判定は「他の override があるおかげで不要」なケースを見落とすため、
-  // REMOVE 候補をまとめて外した状態でもう一度確認する。
-  let deletable = removable;
-  if (removable.length > 1) {
-    console.log('Verifying the removal candidates all at once...');
-    const withoutAll = { ...overrides };
-    for (const item of removable) delete withoutAll[item.name];
-    const combined = evaluate(withoutAll);
+  const stillFine =
+    combined.resolvable &&
+    combined.auditPassed &&
+    removable.every((item) => combined.versions.get(item.name).join(', ') === baseline.versions.get(item.name).join(', '));
 
-    const stillFine =
-      combined.resolvable &&
-      combined.auditPassed &&
-      removable.every((item) => combined.versions.get(item.name).join(', ') === baseline.versions.get(item.name).join(', '));
-
-    if (!stillFine) {
-      console.log('They are NOT removable together (each one only looks redundant while the others remain).');
-      console.log('Delete them one at a time and re-run this script after each deletion.');
-      deletable = [];
-    }
-    console.log('');
+  if (!stillFine) {
+    console.log('They are NOT removable together (each one only looks redundant while the others remain).');
+    console.log('Delete them one at a time and re-run this script after each deletion.');
+    deletable = [];
   }
+}
 
-  if (deletable.length > 0) {
-    console.log('The following overrides can be deleted from package.json:');
-    for (const item of deletable) {
-      console.log(`- ${item.name}`);
-    }
-    console.log('Run "npm install" afterwards to refresh package-lock.json.');
+if (deletable.length > 0) {
+  console.log('');
+  console.log('The following overrides can be deleted from package.json:');
+  for (const item of deletable) {
+    console.log(`- ${item.name}`);
   }
+  console.log('Run "npm install" afterwards to refresh package-lock.json.');
 }
 if (review.length > 0) {
   console.log('');
   console.log('REVIEW entries no longer affect the audit result, but still force versions.');
   console.log('Delete them only if they were not added for compatibility reasons, and re-run the tests.');
+}
+
+reportToGitHubActions(deletable);
+
+if (failOnRemovable && deletable.length > 0) {
+  process.exitCode = 1;
+}
+
+// GitHub Actions 上では注釈と Job Summary にも出す。ローカル実行では何もしない。
+function reportToGitHubActions(entries) {
+  for (const item of entries) {
+    console.log(`::warning title=Removable override::${item.name} (${item.range}) can be deleted from package.json.`);
+  }
+
+  const summaryPath = process.env.GITHUB_STEP_SUMMARY;
+  if (!summaryPath) return;
+
+  const lines = [
+    '## Overrides review',
+    '',
+    '| Verdict | Package | Range | Detail |',
+    '| --- | --- | --- | --- |',
+    ...results.map((item) => `| ${item.verdict} | \`${item.name}\` | \`${item.range}\` | ${item.detail} |`),
+    '',
+  ];
+
+  if (entries.length > 0) {
+    lines.push('These overrides can be deleted from `package.json` (run `npm install` afterwards):', '');
+    lines.push(...entries.map((item) => `- \`${item.name}\``));
+  } else {
+    lines.push('No override can be deleted right now.');
+  }
+  lines.push('');
+
+  fs.appendFileSync(summaryPath, lines.join('\n'));
 }
