@@ -21,7 +21,7 @@ CaptureSearchResult/
 
 ### 動作
 
-Excel がアクティブな状態で `Ctrl+Shift+V` を押すと：
+Excel がアクティブな状態で `Ctrl+Alt+V` を押すと：
 
 1. クリップボードが空の場合は何もしない
 1. `♪` が含まれていない場合は何もしない

@@ -17,10 +17,6 @@ const threshold = SEVERITY_RANK[auditLevel] ?? SEVERITY_RANK.high;
 // 対応版が出たら該当行を削除して、監査が通ることを確認する。
 // 何を見送ったかを差分として残すため、ここだけで管理する(環境変数からは渡さない)。
 const allowlist = new Set([
-  // Transitive advisories currently unresolved in @vscode/test-cli dependency chain.
-  'GHSA-73rr-hh4g-fpgx',
-  'GHSA-5c6j-r48x-rmvq',
-  'GHSA-qj8w-gfj5-8c6v',
 ]);
 
 const filePath = process.argv[2] || 'audit.json';
