@@ -79,7 +79,7 @@
     "eslint-plugin-redos": "^4.5.0",
     "ts-loader": "^9.6.2",
     "typescript": "^6.0.3",
-    "webpack": "^5.109.0",
+    "webpack": "^5.109.2",
     "webpack-cli": "^7.2.1"
   },
   "overrides": {
