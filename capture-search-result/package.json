@@ -83,7 +83,13 @@
     "webpack-cli": "^7.2.3"
   },
   "overrides": {
-    "serialize-javascript": "~7.0.5",
+    "serialize-javascript": ">=7.0.5",
+    "@azure/identity": {
+      "@azure/msal-node": "^7.1.0"
+    },
+    "mocha": {
+      "diff": "^8.0.3"
+    },
     "minimatch": "^10.2.5",
     "glob": "^13.0.6"
   }
